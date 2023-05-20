@@ -114,7 +114,7 @@ export class PostController {
   async getPostById(@Req() request, @Param('id') postId: string) {
     const post = await this.postsQueryRepository.getPostById(
       postId,
-      request.user,
+      request.user.userId,
     );
     if (!post) {
       throw new PostNotFoundException();
@@ -160,7 +160,7 @@ export class PostController {
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
     return await this.postsQueryRepository.getAllPosts(
       mergedQueryParams,
-      request.user,
+      request.user.userId,
     );
   }
   @UseGuards(JwtAuthGuard)
@@ -176,7 +176,7 @@ export class PostController {
     const newCommentId = await this.commentService.createComment(
       postId,
       content.content,
-      request.user,
+      request.user.userId,
     );
     const newComment = await this.commentsQueryRepository.getCommentById(
       newCommentId,
@@ -201,7 +201,7 @@ export class PostController {
     return await this.commentsQueryRepository.getAllCommentsByPostId(
       postId,
       mergedQueryParams,
-      request.user,
+      request.user.userId,
     );
   }
   @UseGuards(JwtAuthGuard)
@@ -217,7 +217,7 @@ export class PostController {
       throw new CustomNotFoundException('post');
     }
     const isPostLiked = await this.likeService.updatePostLike(
-      request.user,
+      request.user.userId,
       postId,
       likeStatus.likeStatus,
     );

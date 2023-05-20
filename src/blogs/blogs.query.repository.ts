@@ -70,9 +70,12 @@ export class BlogsQueryRepository {
     return outputBlogs;
   }
 
-  async getAllBlogsForCurrentUser(mergedQueryParams) {
+  async getAllBlogsForCurrentUser(mergedQueryParams, userId) {
     const { searchNameTerm, pageNumber, pageSize, sortBy, sortDirection } = mergedQueryParams;
-    const searchQuery = searchNameTerm !== '' ? { name: new RegExp(searchNameTerm, 'gi') } : {};
+    const searchQuery = {
+      userId: userId,
+      ...(searchNameTerm !== '' ? { name: new RegExp(searchNameTerm, 'gi') } : {})
+    };
   
     const [blogsCount, blogs] = await Promise.all([
       this.blogModel.countDocuments(searchQuery),

@@ -120,7 +120,7 @@ export class AuthController {
   @Post('login')
   async login(@Req() request, @Res({ passthrough: true }) response) {
     const { accessToken, refreshToken } = await this.authService.login(
-      request.user,
+      request.user.userId,
       request.ip,
       request.headers['user-agent']!,
     );
@@ -135,7 +135,7 @@ export class AuthController {
   @Get('me')
   async currentUserInfo(@Req() request) {
     const currentUserInfo = await this.usersService.currentUserInfo(
-      request.user,
+      request.user.userId,
     );
     if (!currentUserInfo) {
       throw new UnableException('get current user info');

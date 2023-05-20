@@ -106,25 +106,25 @@ export class BlogsController {
     }
     return blog;
   }
-  @UseGuards(BasicAuthGuard)
-  @Put(':id')
-  @HttpCode(204)
-  async updateBlogById(
-    @Param('id') blogsId: string,
-    @Body() blogUpdateInputModel: UpdateBlogInputModelType,
-  ) {
+  // @UseGuards(BasicAuthGuard)
+  // @Put(':id')
+  // @HttpCode(204)
+  // async updateBlogById(
+  //   @Param('id') blogsId: string,
+  //   @Body() blogUpdateInputModel: UpdateBlogInputModelType,
+  // ) {
   
-    if (!await this.checkService.isBlogExist(blogsId)){
-      throw new CustomNotFoundException('blog')
-    } 
-    const result = await this.commandBus.execute(new UpdateBlogByIdFromUriCommand(
-      blogsId,
-      blogUpdateInputModel,
-    ));
-    if (!result) {
-      throw new UnableException('blog updating');
-    }
-  }
+  //   if (!await this.checkService.isBlogExist(blogsId)){
+  //     throw new CustomNotFoundException('blog')
+  //   } 
+  //   const result = await this.commandBus.execute(new UpdateBlogByIdFromUriCommand(
+  //     blogsId,
+  //     blogUpdateInputModel,
+  //   ));
+  //   if (!result) {
+  //     throw new UnableException('blog updating');
+  //   }
+  // }
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
@@ -175,7 +175,7 @@ export class BlogsController {
     return await this.postsQueryRepository.getAllPostsByBlogsId(
       mergedQueryParams,
       blogId,
-      request.user,
+      request.user.userId,
     );
   }
   async isBlogExist(blogId) {

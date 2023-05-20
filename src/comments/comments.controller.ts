@@ -59,7 +59,7 @@ export class CommentsControllers {
   async getCommentById(@Req() request, @Param('id') commentId: string) {
     const comment = await this.commentsQueryRepository.getCommentById(
       commentId,
-      request.user, //user = userId
+      request.user.userId, //user = userId
     );
     if (!comment) {
       throw new CustomNotFoundException('comment');
@@ -74,7 +74,7 @@ export class CommentsControllers {
       throw new CustomNotFoundException('comment');
     }
     if (
-      !(await this.checkService.isUserOwnerOfComment(request.user, commentId))
+      !(await this.checkService.isUserOwnerOfComment(request.user.userId, commentId))
     ) {
       throw new CustomisableException(
         'user is not owner',
@@ -101,7 +101,7 @@ export class CommentsControllers {
       throw new CustomNotFoundException('comment');
     }
     if (
-      !(await this.checkService.isUserOwnerOfComment(request.user, commentId))
+      !(await this.checkService.isUserOwnerOfComment(request.user.userId, commentId))
     ) {
       throw new CustomisableException(
         'user is not owner',
@@ -131,7 +131,7 @@ export class CommentsControllers {
       throw new CustomNotFoundException('comment');
     }
     const updateCommentLike = await this.likeService.updateCommentLike(
-      request.user,
+      request.user.userId,
       commentId,
       likeStatus.likeStatus,
     );

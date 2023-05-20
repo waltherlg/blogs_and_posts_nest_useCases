@@ -144,7 +144,7 @@ export class BloggerBlogsController {
   @Get()
   async getAllBlogsForCurrentUser(@Query() queryParams: RequestBlogsQueryModel, @Req() request) {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
-    return await this.blogsQueryRepository.getAllBlogs(mergedQueryParams);
+    return await this.blogsQueryRepository.getAllBlogsForCurrentUser(mergedQueryParams, request.user.userId);
   }
 
 
@@ -154,7 +154,6 @@ export class BloggerBlogsController {
     @Body() inputPostCreateModel: CreatePostByBlogsIdInputModelType,
   ) {
     const postCreateModel = { ...inputPostCreateModel, blogId: blogId };
-    //check is blog exist in post service
     const createdPostId = await this.postsService.createPost(postCreateModel);
     const newPost = await this.postsQueryRepository.getPostById(createdPostId);
     if (!newPost) {
