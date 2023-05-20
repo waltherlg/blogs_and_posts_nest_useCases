@@ -37,7 +37,7 @@ import { IsCustomUrl, StringTrimNotEmpty } from '../middlewares/validators';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { request } from 'express';
 import { CreateBlogCommand, CreateBlogUseCase } from './application/use-cases/create-blog-use-case';
-import { UpdateBlogByIdFromUriCommand, UpdateBlogByIdFromUriUseCase } from './application/use-cases/upadate-blog-using-id-from-uri';
+import { UpdateBlogByIdFromUriCommand, UpdateBlogByIdFromUriUseCase } from './application/use-cases/upadate-blog-using-id-from-uri-use-case';
 import { CommandBus } from '@nestjs/cqrs';
 
 export class CreateBlogInputModelType {
@@ -88,16 +88,6 @@ export class BlogsController {
     //private createBlogUseCase: CreateBlogUseCase,
     private updateBlogByIdFromUriUseCase: UpdateBlogByIdFromUriUseCase,
   ) {}
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createBlogs(@Body() blogCreateInputModel: CreateBlogInputModelType) {
-    const newBlogsId = await this.commandBus.execute(new CreateBlogCommand(blogCreateInputModel));
-    const newBlog = await this.blogsQueryRepository.getBlogById(newBlogsId);
-    if (!newBlog) {
-      throw new UnableException('blog creating');
-    }
-    return newBlog;
-  }
   @Get(':id')
   async getBlogById(@Param('id') blogsId: string) {
     const blog = await this.blogsQueryRepository.getBlogById(blogsId);
@@ -144,21 +134,7 @@ export class BlogsController {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
     return await this.blogsQueryRepository.getAllBlogs(mergedQueryParams);
   }
-  @UseGuards(BasicAuthGuard)
-  @Post(':id/posts')
-  async createPostByBlogsId(
-    @Param('id') blogId: string,
-    @Body() inputPostCreateModel: CreatePostByBlogsIdInputModelType,
-  ) {
-    const postCreateModel = { ...inputPostCreateModel, blogId: blogId };
-    //check is blog exist in post service
-    const createdPostId = await this.postsService.createPost(postCreateModel);
-    const newPost = await this.postsQueryRepository.getPostById(createdPostId);
-    if (!newPost) {
-      throw new UnableException('post creating');
-    }
-    return newPost;
-  }
+  
   @UseGuards(OptionalJwtAuthGuard)
   @Get(':id/posts')
   async getAllPostsByBlogsId(

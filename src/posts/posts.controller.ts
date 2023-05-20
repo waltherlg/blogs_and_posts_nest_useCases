@@ -99,16 +99,16 @@ export class PostController {
     private readonly postsQueryRepository: PostsQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
   ) {}
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createPost(@Body() postCreateInputModel: CreatePostInputModelType) {
-    const newPostId = await this.postsService.createPost(postCreateInputModel);
-    const newPost = await this.postsQueryRepository.getPostById(newPostId);
-    if (!newPost) {
-      throw new UnableException('post creating');
-    }
-    return newPost;
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Post()
+  // async createPost(@Body() postCreateInputModel: CreatePostInputModelType) {
+  //   const newPostId = await this.postsService.createPost(postCreateInputModel);
+  //   const newPost = await this.postsQueryRepository.getPostById(newPostId);
+  //   if (!newPost) {
+  //     throw new UnableException('post creating');
+  //   }
+  //   return newPost;
+  // }
   @UseGuards(OptionalJwtAuthGuard)
   @Get(':id')
   async getPostById(@Req() request, @Param('id') postId: string) {

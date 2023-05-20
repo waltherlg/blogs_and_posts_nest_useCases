@@ -12,7 +12,7 @@ export class PostsService {
     private readonly blogRepository: BlogsRepository,
   ) {}
   async createPost(
-    postCreateInputModel: CreatePostInputModelType,
+    postCreateInputModel: CreatePostInputModelType, userId: string,
   ): Promise<string> {
     const blog = await this.blogRepository.getBlogDBTypeById(
       postCreateInputModel.blogId,
@@ -25,8 +25,9 @@ export class PostsService {
       postCreateInputModel.title,
       postCreateInputModel.shortDescription,
       postCreateInputModel.content,
+      userId,
       postCreateInputModel.blogId,
-      blog.name || 'uk',
+      blog.name,
       new Date().toISOString(),
       0,
       0,

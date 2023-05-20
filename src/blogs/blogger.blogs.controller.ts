@@ -37,10 +37,11 @@ import { IsCustomUrl, StringTrimNotEmpty } from '../middlewares/validators';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { request } from 'express';
 import { CreateBlogCommand, CreateBlogUseCase } from './application/use-cases/create-blog-use-case';
-import { UpdateBlogByIdFromUriCommand, UpdateBlogByIdFromUriUseCase } from './application/use-cases/upadate-blog-using-id-from-uri';
+import { UpdateBlogByIdFromUriCommand, UpdateBlogByIdFromUriUseCase } from './application/use-cases/upadate-blog-using-id-from-uri-use-case';
 import { CommandBus } from '@nestjs/cqrs';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BlogActionResult, handleBlogOperationResult } from './helpers/blogs.enum.action.result';
+import { UpdatePostByIdFromBloggerControllerCommand } from './application/use-cases/upadate-post-by-id-from-blogs-controller-use-case';
 
 export class CreateBlogInputModelType {
   @StringTrimNotEmpty()
@@ -103,6 +104,7 @@ export class BloggerBlogsController {
     //private createBlogUseCase: CreateBlogUseCase,
     private updateBlogByIdFromUriUseCase: UpdateBlogByIdFromUriUseCase,
   ) {}
+  //ready
   @Put(':id')
   @HttpCode(204)
   async updateBlogById(
@@ -117,7 +119,7 @@ export class BloggerBlogsController {
     ));
     handleBlogOperationResult(result)
   }
-
+  //need useCase?
   @Delete(':id')
   @HttpCode(204)
   async deleteBlogById(@Req() request, @Param('id') blogId: string) {
@@ -130,31 +132,32 @@ export class BloggerBlogsController {
       throw new UnableException('blog deleting');
     }
   }
-
+  //ready
   @Post()
-  async createBlogs(@Body() blogCreateInputModel: CreateBlogInputModelType) {
-    const newBlogsId = await this.commandBus.execute(new CreateBlogCommand(blogCreateInputModel));
+  async createBlog(@Req() request, @Body() blogCreateInputModel: CreateBlogInputModelType) {
+    const newBlogsId = await this.commandBus.execute(new CreateBlogCommand(request.user.userId, blogCreateInputModel));
     const newBlog = await this.blogsQueryRepository.getBlogById(newBlogsId);
     if (!newBlog) {
       throw new UnableException('blog creating');
     }
     return newBlog;
   }
-
+  //ready
   @Get()
   async getAllBlogsForCurrentUser(@Query() queryParams: RequestBlogsQueryModel, @Req() request) {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
     return await this.blogsQueryRepository.getAllBlogsForCurrentUser(mergedQueryParams, request.user.userId);
   }
 
-
+  
   @Post(':id/posts')
   async createPostByBlogsId(
+    @Req() request,
     @Param('id') blogId: string,
     @Body() inputPostCreateModel: CreatePostByBlogsIdInputModelType,
   ) {
     const postCreateModel = { ...inputPostCreateModel, blogId: blogId };
-    const createdPostId = await this.postsService.createPost(postCreateModel);
+    const createdPostId = await this.postsService.createPost(postCreateModel, request.user.userId);
     const newPost = await this.postsQueryRepository.getPostById(createdPostId);
     if (!newPost) {
       throw new UnableException('post creating');
@@ -163,10 +166,14 @@ export class BloggerBlogsController {
   }
 
   @Put(':blogId/posts/postId')
+  @HttpCode(204)
   async updatePost(@Req() request, 
   @Param('blogId') blogId: string, 
   @Param('postId') postId: string,
-  @Body() updatePostDto: UpdatePostByBlogsIdInputModelType){}
+  @Body() postUpdateDto: UpdatePostByBlogsIdInputModelType){
+    const result: BlogActionResult = await this.commandBus.execute(new UpdatePostByIdFromBloggerControllerCommand(request.user.userId, blogId, postId, postUpdateDto))
+    handleBlogOperationResult(result)
+  }
 
 
 

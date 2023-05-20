@@ -10,7 +10,7 @@ import { CommandHandler } from '@nestjs/cqrs/dist';
 import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
 
 export class CreateBlogCommand {
-  constructor(public blogCreateInputModel: CreateBlogInputModelType){}
+  constructor(public userId, public blogCreateInputModel: CreateBlogInputModelType){}
 }
 
 @CommandHandler(CreateBlogCommand)
@@ -21,7 +21,7 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
   ): Promise<string> {
     const blogDTO = new BlogDBType(
       new Types.ObjectId(),
-      null,
+      command.userId,
       command.blogCreateInputModel.name,
       command.blogCreateInputModel.description,
       command.blogCreateInputModel.websiteUrl,

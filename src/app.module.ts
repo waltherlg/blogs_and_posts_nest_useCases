@@ -61,10 +61,11 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { CqrsModule } from '@nestjs/cqrs/dist/cqrs.module';
 import { APP_GUARD } from '@nestjs/core';
 import { CreateBlogUseCase } from './blogs/application/use-cases/create-blog-use-case';
-import { UpdateBlogByIdFromUriUseCase } from './blogs/application/use-cases/upadate-blog-using-id-from-uri';
+import { UpdateBlogByIdFromUriUseCase } from './blogs/application/use-cases/upadate-blog-using-id-from-uri-use-case';
 import { SaBlogsController } from './blogs/sa.blogs.controller';
 import { BloggerBlogsController } from './blogs/blogger.blogs.controller';
 import { BindBlogWithUserUseCase } from './blogs/application/use-cases/bind-blog-with-user-use-case';
+import { UpdatePostByIdFromBloggerControllerUseCase } from './blogs/application/use-cases/upadate-post-by-id-from-blogs-controller-use-case';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -74,7 +75,8 @@ if (!emailUser || !emailPassword) {
 
 const useCases = [CreateBlogUseCase, 
   UpdateBlogByIdFromUriUseCase,
-  BindBlogWithUserUseCase,]
+  BindBlogWithUserUseCase,
+UpdatePostByIdFromBloggerControllerUseCase,]
 
 @Module({
   imports: [

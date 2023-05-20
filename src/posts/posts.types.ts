@@ -7,6 +7,7 @@ export class PostDBType {
     public title: string,
     public shortDescription: string,
     public content: string,
+    public userId: string | null,
     public blogId: string,
     public blogName: string,
     public createdAt: string,
@@ -29,6 +30,8 @@ export class Post {
   shortDescription: string;
   @Prop()
   content: string;
+  @Prop()
+  userId: string;
   @Prop()
   blogId: string;
   @Prop()
