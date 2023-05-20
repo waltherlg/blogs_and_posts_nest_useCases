@@ -24,6 +24,9 @@ export function testPostCrud() {
       app = moduleFixture.createNestApplication();
       await app.init();
     });
+    afterAll(async () => {
+      await app.close();
+    });
 
     let firstCreatedBlogId: string;
     let createdPostId: string;

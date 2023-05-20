@@ -6,9 +6,10 @@ import {
 } from '../../public.blogs.controller';
 import { CommandHandler } from '@nestjs/cqrs/dist/decorators';
 import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
+import { BlogActionResult } from 'src/blogs/helpers/blogs.enum.action.result';
 
 export class UpdateBlogByIdFromUriCommand {
-  constructor(public blogsId: string,
+  constructor(public blogsId: string, public userId: string,
     public blogUpdateInputModel: UpdateBlogInputModelType){}
 }
 
@@ -18,11 +19,19 @@ export class UpdateBlogByIdFromUriUseCase implements ICommandHandler<UpdateBlogB
 
   async execute(
     command: UpdateBlogByIdFromUriCommand,
-  ): Promise<boolean> {
-    const blog = await this.blogsRepository.getBlogDBTypeById(command.blogsId);   
+  ): Promise<BlogActionResult> {
+    const blog = await this.blogsRepository.getBlogDBTypeById(command.blogsId);
+    if(!blog) return BlogActionResult.BlogNotFound
+    if(blog.userId !== command.userId) return BlogActionResult.NotOwner
     blog.name = command.blogUpdateInputModel.name;
     blog.description = command.blogUpdateInputModel.description;
     blog.websiteUrl = command.blogUpdateInputModel.websiteUrl;
-    return await this.blogsRepository.saveBlog(blog);
+    const result = await this.blogsRepository.saveBlog(blog);
+    if(result) {
+      return BlogActionResult.Success
+    } else { 
+      return BlogActionResult.NotSaved
+    }
+
   }
 }

@@ -40,6 +40,7 @@ import { CreateBlogCommand, CreateBlogUseCase } from './application/use-cases/cr
 import { UpdateBlogByIdFromUriCommand, UpdateBlogByIdFromUriUseCase } from './application/use-cases/upadate-blog-using-id-from-uri';
 import { CommandBus } from '@nestjs/cqrs';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { BlogActionResult, handleBlogOperationResult } from './helpers/blogs.enum.action.result';
 
 export class CreateBlogInputModelType {
   @StringTrimNotEmpty()
@@ -63,6 +64,18 @@ export class UpdateBlogInputModelType {
   @StringTrimNotEmpty()
   @IsCustomUrl({ message: 'Invalid URL format' })
   websiteUrl: string;
+}
+
+export class UpdatePostByBlogsIdInputModelType {
+  @StringTrimNotEmpty()
+  @MaxLength(30)
+  title: string;
+  @StringTrimNotEmpty()
+  @MaxLength(100)
+  shortDescription: string;
+  @StringTrimNotEmpty()
+  @MaxLength(1000)
+  content: string;
 }
 
 export class CreatePostByBlogsIdInputModelType {
@@ -93,24 +106,21 @@ export class BloggerBlogsController {
   @Put(':id')
   @HttpCode(204)
   async updateBlogById(
+    @Req() request,
     @Param('id') blogsId: string,
     @Body() blogUpdateInputModel: UpdateBlogInputModelType,
-  ) {
-    
-    if (!await this.checkService.isBlogExist) throw new CustomNotFoundException('blog')
-    
-    const result = await this.commandBus.execute(new UpdateBlogByIdFromUriCommand(
+  ) {  
+    const result: BlogActionResult = await this.commandBus.execute(new UpdateBlogByIdFromUriCommand(
       blogsId,
+      request.user.userId,
       blogUpdateInputModel,
     ));
-
-    if (!result) {
-      throw new UnableException('blog updating');
-    }
+    handleBlogOperationResult(result)
   }
+
   @Delete(':id')
   @HttpCode(204)
-  async deleteBlogById(@Param('id') blogId: string) {
+  async deleteBlogById(@Req() request, @Param('id') blogId: string) {
     const isBlogExist = await this.checkService.isBlogExist(blogId);
     if (!isBlogExist) {
       throw new BlogNotFoundException();
@@ -120,11 +130,7 @@ export class BloggerBlogsController {
       throw new UnableException('blog deleting');
     }
   }
-  @Get()
-  async getAllBlogsForCurrentUser(@Query() queryParams: RequestBlogsQueryModel, @Req() request) {
-    const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
-    return await this.blogsQueryRepository.getAllBlogs(mergedQueryParams);
-  }
+
   @Post()
   async createBlogs(@Body() blogCreateInputModel: CreateBlogInputModelType) {
     const newBlogsId = await this.commandBus.execute(new CreateBlogCommand(blogCreateInputModel));
@@ -134,18 +140,14 @@ export class BloggerBlogsController {
     }
     return newBlog;
   }
-  @Get(':id')
-  async getBlogById(@Param('id') blogsId: string) {
-    const blog = await this.blogsQueryRepository.getBlogById(blogsId);
-    if (!blog) {
-      throw new CustomisableException('blog', 'blog not found', 404);
-    }
-    return blog;
+
+  @Get()
+  async getAllBlogsForCurrentUser(@Query() queryParams: RequestBlogsQueryModel, @Req() request) {
+    const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
+    return await this.blogsQueryRepository.getAllBlogs(mergedQueryParams);
   }
 
 
-
-  @UseGuards(BasicAuthGuard)
   @Post(':id/posts')
   async createPostByBlogsId(
     @Param('id') blogId: string,
@@ -160,28 +162,16 @@ export class BloggerBlogsController {
     }
     return newPost;
   }
-  @UseGuards(OptionalJwtAuthGuard)
-  @Get(':id/posts')
-  async getAllPostsByBlogsId(
-    @Req() request,
-    @Param('id') blogId: string,
-    @Query() queryParams: RequestQueryParamsModel,
-  ) {
-    await this.isBlogExist(blogId);
 
-    if (!(await this.checkService.isBlogExist(blogId))) {
-      throw new BlogNotFoundException();
-    }
-    const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
-    return await this.postsQueryRepository.getAllPostsByBlogsId(
-      mergedQueryParams,
-      blogId,
-      request.user,
-    );
-  }
-  async isBlogExist(blogId) {
-    if (!(await this.checkService.isBlogExist(blogId))) {
-      throw new BlogNotFoundException();
-    }
-  }
+  @Put(':blogId/posts/postId')
+  async updatePost(@Req() request, 
+  @Param('blogId') blogId: string, 
+  @Param('postId') postId: string,
+  @Body() updatePostDto: UpdatePostByBlogsIdInputModelType){}
+
+
+
+
+
+
 }
