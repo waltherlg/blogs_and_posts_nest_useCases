@@ -70,11 +70,38 @@ export class BlogsQueryRepository {
     return outputBlogs;
   }
 
-  sortByDesc(sortDirection: string) {
+  async getAllBlogsForCurrentUser(mergedQueryParams) {
+    const { searchNameTerm, pageNumber, pageSize, sortBy, sortDirection } = mergedQueryParams;
+    const searchQuery = searchNameTerm !== '' ? { name: new RegExp(searchNameTerm, 'gi') } : {};
+  
+    const [blogsCount, blogs] = await Promise.all([
+      this.blogModel.countDocuments(searchQuery),
+      this.blogModel
+        .find(searchQuery)
+        .skip(this.skipPage(pageNumber, pageSize))
+        .limit(+pageSize)
+        .sort({ [sortBy]: this.sortByDesc(sortDirection) })
+    ]);
+    
+    const blogsOutput = blogs.map(blog => blog.prepareBlogForOutput());
+    const pageCount = Math.ceil(blogsCount / +pageSize);
+  
+    const outputBlogs = {
+      pagesCount: pageCount,
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: blogsCount,
+      items: blogsOutput
+    };
+  
+    return outputBlogs;
+  }
+  
+  private sortByDesc(sortDirection: string) {
     return sortDirection === 'desc' ? -1 : 1;
   }
-
-  skipPage(pageNumber: string, pageSize: string): number {
+  
+  private skipPage(pageNumber: string, pageSize: string): number {
     return (+pageNumber - 1) * +pageSize;
   }
 }

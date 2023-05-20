@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDBType, BlogDocument, BlogTypeOutput } from './blogs.types';
 import { HydratedDocument, Model, Types } from 'mongoose';
+import { log } from 'console';
 
 @Injectable()
 export class BlogsRepository {
@@ -40,8 +41,8 @@ export class BlogsRepository {
     if (!Types.ObjectId.isValid(blogId)) {
       return false;
     }
-    const blog = await this.blogModel.findById(blogId);
-    return !!blog;
+    const count = await this.blogModel.countDocuments({ _id: blogId });
+    return count > 0;
   }
 
   async deleteAllBlogs() {

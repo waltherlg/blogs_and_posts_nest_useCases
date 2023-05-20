@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BlogsController } from './blogs/blogs.controller';
+import { BlogsController } from './blogs/public.blogs.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './blogs/blogs.types';
 import { BlogsService } from './blogs/blogs.service';
@@ -58,7 +58,13 @@ import {
 import { TestRepository } from './all.data/test.repository';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { CqrsModule } from '@nestjs/cqrs/dist/cqrs.module';
 import { APP_GUARD } from '@nestjs/core';
+import { CreateBlogUseCase } from './blogs/application/use-cases/create-blog-use-case';
+import { UpdateBlogByIdFromUriUseCase } from './blogs/application/use-cases/upadate-blog-using-id-from-uri';
+import { SaBlogsController } from './blogs/sa.blogs.controller';
+import { BloggerBlogsController } from './blogs/blogger.blogs.controller';
+import { BindBlogWithUserUseCase } from './blogs/application/use-cases/bind-blog-with-user-use-case';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -66,8 +72,13 @@ if (!emailUser || !emailPassword) {
   throw new Error('password or user for emailAdapter not found');
 }
 
+const useCases = [CreateBlogUseCase, 
+  UpdateBlogByIdFromUriUseCase,
+  BindBlogWithUserUseCase,]
+
 @Module({
   imports: [
+    CqrsModule,
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 10,
@@ -116,6 +127,8 @@ if (!emailUser || !emailPassword) {
   controllers: [
     AppController,
     BlogsController,
+    SaBlogsController,
+    BloggerBlogsController,
     PostController,
     UsersController,
     AuthController,
@@ -156,6 +169,7 @@ if (!emailUser || !emailPassword) {
     CustomUrlValidator,
     CustomBlogIdValidator,
     TrimNotEmptyValidator,
+    ...useCases,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

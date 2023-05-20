@@ -6,7 +6,7 @@ import { Types } from 'mongoose';
 import {
   CreateBlogInputModelType,
   UpdateBlogInputModelType,
-} from './blogs.controller';
+} from './public.blogs.controller';
 import { validateOrReject } from 'class-validator';
 import { BlogNotFoundException } from '../exceptions/custom.exceptions';
 
@@ -24,21 +24,21 @@ const validateOrRejectModel = async (model: any, ctor: { new (): any }) => {
 @Injectable()
 export class BlogsService {
   constructor(private readonly blogsRepository: BlogsRepository) {}
-  async createBlog(
-    blogCreateInputModel: CreateBlogInputModelType,
-  ): Promise<string> {
-    //await validateOrRejectModel(blogCreateInputModel, CreateBlogInputModelType);
-    const blogDTO = new BlogDBType(
-      new Types.ObjectId(),
-      blogCreateInputModel.name,
-      blogCreateInputModel.description,
-      blogCreateInputModel.websiteUrl,
-      new Date().toISOString(),
-      false,
-    );
-    const newBlogsId = await this.blogsRepository.createBlog(blogDTO);
-    return newBlogsId;
-  }
+  // async createBlog(
+  //   blogCreateInputModel: CreateBlogInputModelType,
+  // ): Promise<string> {
+  //   //await validateOrRejectModel(blogCreateInputModel, CreateBlogInputModelType);
+  //   const blogDTO = new BlogDBType(
+  //     new Types.ObjectId(),
+  //     blogCreateInputModel.name,
+  //     blogCreateInputModel.description,
+  //     blogCreateInputModel.websiteUrl,
+  //     new Date().toISOString(),
+  //     false,
+  //   );
+  //   const newBlogsId = await this.blogsRepository.createBlog(blogDTO);
+  //   return newBlogsId;
+  // }
 
   async updateBlogById(
     blogsId: string,

@@ -4,6 +4,7 @@ import mongoose, { HydratedDocument, Types } from 'mongoose';
 export class BlogDBType {
   constructor(
     public _id: Types.ObjectId,
+    public userId: string | null,
     public name: string,
     public description: string,
     public websiteUrl: string,
@@ -23,10 +24,13 @@ export type BlogTypeOutput = {
 
 export type BlogDocument = HydratedDocument<Blog>;
 
+
 @Schema()
 export class Blog {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId })
   _id: Types.ObjectId;
+  @Prop()
+  userId: string | null
   @Prop()
   name: string;
   @Prop()

@@ -28,6 +28,7 @@ import { PostsQueryRepository } from '../posts/posts.query.repository';
 
 import {
   BlogNotFoundException,
+  CustomNotFoundException,
   CustomisableException,
   UnableException,
 } from '../exceptions/custom.exceptions';
@@ -35,6 +36,9 @@ import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { IsCustomUrl, StringTrimNotEmpty } from '../middlewares/validators';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { request } from 'express';
+import { CreateBlogCommand, CreateBlogUseCase } from './application/use-cases/create-blog-use-case';
+import { UpdateBlogByIdFromUriCommand, UpdateBlogByIdFromUriUseCase } from './application/use-cases/upadate-blog-using-id-from-uri';
+import { CommandBus } from '@nestjs/cqrs';
 
 export class CreateBlogInputModelType {
   @StringTrimNotEmpty()
@@ -74,18 +78,20 @@ export class CreatePostByBlogsIdInputModelType {
 @Controller('blogs')
 export class BlogsController {
   constructor(
-    private readonly appService: AppService,
+    private commandBus: CommandBus,
     private readonly blogsService: BlogsService,
     private readonly postsService: PostsService,
     private readonly checkService: CheckService,
     private readonly blogsRepository: BlogsRepository,
     private readonly blogsQueryRepository: BlogsQueryRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
+    //private createBlogUseCase: CreateBlogUseCase,
+    private updateBlogByIdFromUriUseCase: UpdateBlogByIdFromUriUseCase,
   ) {}
   @UseGuards(BasicAuthGuard)
   @Post()
   async createBlogs(@Body() blogCreateInputModel: CreateBlogInputModelType) {
-    const newBlogsId = await this.blogsService.createBlog(blogCreateInputModel);
+    const newBlogsId = await this.commandBus.execute(new CreateBlogCommand(blogCreateInputModel));
     const newBlog = await this.blogsQueryRepository.getBlogById(newBlogsId);
     if (!newBlog) {
       throw new UnableException('blog creating');
@@ -107,11 +113,14 @@ export class BlogsController {
     @Param('id') blogsId: string,
     @Body() blogUpdateInputModel: UpdateBlogInputModelType,
   ) {
-    // check is blog exist in blogService
-    const result = await this.blogsService.updateBlogById(
+  
+    if (!await this.checkService.isBlogExist(blogsId)){
+      throw new CustomNotFoundException('blog')
+    } 
+    const result = await this.commandBus.execute(new UpdateBlogByIdFromUriCommand(
       blogsId,
       blogUpdateInputModel,
-    );
+    ));
     if (!result) {
       throw new UnableException('blog updating');
     }
