@@ -36,12 +36,12 @@ import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { IsCustomUrl, StringTrimNotEmpty } from '../middlewares/validators';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { request } from 'express';
-import { CreateBlogCommand, CreateBlogUseCase } from './application/use-cases/create-blog-use-case';
-import { UpdateBlogByIdFromUriCommand, UpdateBlogByIdFromUriUseCase } from './application/use-cases/upadate-blog-using-id-from-uri-use-case';
+import { CreateBlogCommand, CreateBlogUseCase } from './application/use-cases/blogger-create-blog-use-case';
+import { UpdateBlogByIdFromUriCommand, UpdateBlogByIdFromUriUseCase } from './application/use-cases/blogger-upadate-blog-using-id-from-uri-use-case';
 import { CommandBus } from '@nestjs/cqrs';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BlogActionResult, handleBlogOperationResult } from './helpers/blogs.enum.action.result';
-import { UpdatePostByIdFromBloggerControllerCommand } from './application/use-cases/upadate-post-by-id-from-blogs-controller-use-case';
+import { UpdatePostByIdFromBloggerControllerCommand } from './application/use-cases/bloger-upadate-post-by-id-from-blogs-controller-use-case';
 
 export class CreateBlogInputModelType {
   @StringTrimNotEmpty()

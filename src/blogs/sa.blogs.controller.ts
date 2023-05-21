@@ -16,7 +16,7 @@ import {
 
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { CommandBus } from '@nestjs/cqrs';
-import { BindBlogWithUserCommand } from './application/use-cases/bind-blog-with-user-use-case';
+import { BindBlogWithUserCommand } from './application/use-cases/sa-bind-blog-with-user-use-case';
 import { BlogActionResult, handleBlogOperationResult } from './helpers/blogs.enum.action.result';
 
 @UseGuards(BasicAuthGuard)
