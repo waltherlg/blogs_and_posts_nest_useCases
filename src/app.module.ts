@@ -65,7 +65,9 @@ import { UpdateBlogByIdFromUriUseCase } from './blogs/application/use-cases/blog
 import { SaBlogsController } from './blogs/sa.blogs.controller';
 import { BloggerBlogsController } from './blogs/blogger.blogs.controller';
 import { BindBlogWithUserUseCase } from './blogs/application/use-cases/sa-bind-blog-with-user-use-case';
-import { UpdatePostByIdFromBloggerControllerUseCase } from './blogs/application/use-cases/bloger-upadate-post-by-id-from-blogs-controller-use-case';
+import { UpdatePostByIdFromBloggerControllerUseCase } from './blogs/application/use-cases/blogger-upadate-post-by-id-from-blogs-controller-use-case';
+import { DeleteBlogByIdFromUriUseCase } from './blogs/application/use-cases/blogger-delete-blog-by-id-use-case';
+import { CreatePostFromBloggerControllerUseCase } from './blogs/application/use-cases/blogger-create-post-from-blogs-controller-use-case';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -76,7 +78,9 @@ if (!emailUser || !emailPassword) {
 const useCases = [CreateBlogUseCase, 
   UpdateBlogByIdFromUriUseCase,
   BindBlogWithUserUseCase,
-UpdatePostByIdFromBloggerControllerUseCase,]
+  CreatePostFromBloggerControllerUseCase,
+UpdatePostByIdFromBloggerControllerUseCase,
+DeleteBlogByIdFromUriUseCase,]
 
 @Module({
   imports: [

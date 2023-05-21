@@ -3,12 +3,13 @@ import { CustomNotFoundException, CustomisableException } from "src/exceptions/c
 export enum BlogActionResult {
     Success = 'SUCCESS',
     BlogNotFound = 'BLOG_NOT_FOUND',
-    UserAlreadyBound = 'USER_ALREADY_BOUND',
     UserNotFound = 'USER_NOT_FOUND',
     PostNotFound = 'POST_NOT_FOUND',
-    NotSaved = 'CHANGES_NOT_SAVED',
     NotOwner = 'CURRENT_USER_IS_NOT_OWNER',
-    NotCreated = 'NOT_CREATED',   
+    UserAlreadyBound = 'USER_ALREADY_BOUND',
+    NotSaved = 'CHANGES_NOT_SAVED',   
+    NotCreated = 'NOT_CREATED', 
+    NotDeleted = 'NOT_DELETED', 
   }
 
   export function handleBlogOperationResult(result: BlogActionResult) {
@@ -32,6 +33,9 @@ export enum BlogActionResult {
         throw new CustomisableException('not owner', 'users cannot change data unless they are the owner', 403)
       case BlogActionResult.NotCreated:
         throw new CustomisableException('can\'t create', 'failed to create new doccument', 500)  
+      case BlogActionResult.NotDeleted:
+        throw new CustomisableException('can\'t delete', 'failed to delete this doccument', 500)  
+      
       default:
         throw new CustomisableException('unexpected', 'An unexpected error occurred', 400)       
     }
