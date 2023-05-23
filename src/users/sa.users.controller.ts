@@ -43,14 +43,15 @@ export class CreateUserInputModelType {
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
-@Controller('users')
+@UseGuards(BasicAuthGuard)
+@Controller('sa/users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly usersQueryRepository: UsersQueryRepository,
     private readonly checkService: CheckService,
   ) {}
-  @UseGuards(BasicAuthGuard)
+  
   @Post()
   async createUser(@Body() userCreateInputModel: CreateUserInputModelType) {
     const newUsersId = await this.usersService.createUser(userCreateInputModel);
@@ -58,12 +59,13 @@ export class UsersController {
     return user;
   }
 
+  //add all, banned, not banned in query params
   @Get()
   async getAllUsers(@Query() queryParams: RequestUsersQueryModel) {
     const mergedQueryParams = { ...DEFAULT_USERS_QUERY_PARAMS, ...queryParams };
     return await this.usersQueryRepository.getAllUsers(mergedQueryParams);
   }
-  @UseGuards(BasicAuthGuard)
+
   @Delete(':id')
   @HttpCode(204)
   async deleteUserById(@Param('id') userId: string) {

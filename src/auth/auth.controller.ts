@@ -10,7 +10,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { CreateUserInputModelType } from '../users/users.controller';
+import { CreateUserInputModelType } from '../users/sa.users.controller';
 import { UsersQueryRepository } from '../users/users.query.repository';
 import { CheckService } from '../other.services/check.service';
 import {

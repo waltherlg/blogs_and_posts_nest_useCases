@@ -98,14 +98,8 @@ export class CreatePostByBlogsIdInputModelType {
 export class BloggerBlogsController {
   constructor(
     private commandBus: CommandBus,
-    private readonly blogsService: BlogsService,
-    private readonly postsService: PostsService,
-    private readonly checkService: CheckService,
-    private readonly blogsRepository: BlogsRepository,
     private readonly blogsQueryRepository: BlogsQueryRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
-    //private createBlogUseCase: CreateBlogUseCase,
-    private updateBlogByIdFromUriUseCase: UpdateBlogByIdFromUriUseCase,
   ) {}
   //ready
   @Put(':id')

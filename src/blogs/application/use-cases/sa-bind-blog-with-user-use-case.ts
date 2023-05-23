@@ -8,7 +8,7 @@ import {
 } from '../../public.blogs.controller';
 import { CommandHandler } from '@nestjs/cqrs/dist';
 import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
-import { BlogActionResult } from 'src/blogs/helpers/blogs.enum.action.result';
+import { BlogActionResult } from '../../helpers/blogs.enum.action.result';
 
 export class BindBlogWithUserCommand {
   constructor(public blogId: string, public userId: string){}

@@ -1,4 +1,4 @@
-import { CustomNotFoundException, CustomisableException } from "src/exceptions/custom.exceptions";
+import { CustomNotFoundException, CustomisableException } from "../../exceptions/custom.exceptions";
 
 export enum BlogActionResult {
     Success = 'SUCCESS',

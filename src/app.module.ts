@@ -20,7 +20,7 @@ import { TestingController } from './all.data/testing.controller';
 import { UsersService } from './users/users.service';
 import { BcryptService } from './other.services/bcrypt.service';
 import { UsersRepository } from './users/users.repository';
-import { UsersController } from './users/users.controller';
+import { UsersController } from './users/sa.users.controller';
 import { User, UserSchema } from './users/users.types';
 import { UsersQueryRepository } from './users/users.query.repository';
 import { AuthService } from './auth/auth.service';

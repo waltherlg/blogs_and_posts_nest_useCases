@@ -5,7 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserInputModelType } from '../users/users.controller';
+import { CreateUserInputModelType } from '../users/sa.users.controller';
 import { DTOFactory } from '../helpers/DTO.factory';
 import { EmailManager } from '../managers/email-manager';
 import { v4 as uuidv4 } from 'uuid';
