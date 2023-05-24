@@ -156,7 +156,7 @@ export class BloggerBlogsController {
   }
 
   //ready?
-  @Put(':blogId/posts/postId')
+  @Put(':blogId/posts/:postId')
   @HttpCode(204)
   async updatePost(@Req() request, 
   @Param('blogId') blogId: string, 
@@ -166,7 +166,7 @@ export class BloggerBlogsController {
     handleBlogOperationResult(result)
   }
 
-  @Delete(':blogId/posts/postId')
+  @Delete(':blogId/posts/:postId')
   @HttpCode(204)
   async deletePost(@Req() request,
   @Param('blogId') blogId: string,
@@ -174,10 +174,4 @@ export class BloggerBlogsController {
     const result: BlogActionResult = await this.commandBus.execute(new DeletePostByIdFromUriCommand(request.user.userId, blogId, postId))
     handleBlogOperationResult(result)
   }
-
-
-
-
-
-
 }

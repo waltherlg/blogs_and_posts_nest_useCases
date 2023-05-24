@@ -6,10 +6,10 @@ import {
 } from '../../public.blogs.controller';
 import { CommandHandler } from '@nestjs/cqrs/dist/decorators';
 import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
-import { BlogActionResult } from '../../helpers/blogs.enum.action.result';
+import { BlogActionResult } from 'src/blogs/helpers/blogs.enum.action.result';
 import { CreatePostByBlogsIdInputModelType } from 'src/blogs/blogger.blogs.controller';
-import { PostsRepository } from '../../../posts/posts.repository';
-import { PostDBType } from '../../../posts/posts.types';
+import { PostsRepository } from 'src/posts/posts.repository';
+import { PostDBType } from 'src/posts/posts.types';
 import { Types } from 'mongoose';
 
 export class CreatePostFromBloggerControllerCommand {
@@ -46,6 +46,5 @@ export class CreatePostFromBloggerControllerUseCase implements ICommandHandler<C
     const newPostId = await this.postsRepository.createPost(postDto)
     if(!newPostId) return BlogActionResult.NotCreated
     return newPostId
-
   }
 }

@@ -9,5 +9,7 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "moduleDirectories": ["<rootDir>/../", "node_modules"],
   "testTimeout": 10000
 }
+

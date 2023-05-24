@@ -16,7 +16,8 @@ export function testBloggerCrud() {
 
     const notExistingId = new Types.ObjectId();
 
-    let accessToken: any;
+    let accessTokenUser1: any;
+    let accessTokenUser2: any;
 
 
     beforeAll(async () => {
@@ -40,13 +41,24 @@ export function testBloggerCrud() {
         .expect(204);
     });
 
-    it('00-00 registration = 204 register new user', async () => {
+    it('00-00 registration = 204 register user1', async () => {
         await request(app.getHttpServer())
           .post(`${endpoints.auth}/registration`)
           .send({
-            login: 'ruslan',
+            login: 'user1',
             password: 'qwerty',
             email: 'ruslan@gmail-1.com',
+          })
+          .expect(204);
+      });
+
+      it('00-00 registration = 204 register user2', async () => {
+        await request(app.getHttpServer())
+          .post(`${endpoints.auth}/registration`)
+          .send({
+            login: 'user2',
+            password: 'qwerty',
+            email: 'ruslan@gmail-2.com',
           })
           .expect(204);
       });
@@ -55,22 +67,22 @@ export function testBloggerCrud() {
         const createResponse = await request(app.getHttpServer())
           .post(`${endpoints.auth}/login`)
           .send({
-            loginOrEmail: 'ruslan',
+            loginOrEmail: 'user1',
             password: 'qwerty',
           })
           .expect(200);
         const createdResponse = createResponse.body;
-        accessToken = createdResponse.accessToken;
+        accessTokenUser1 = createdResponse.accessToken;
         expect(createdResponse).toEqual({
           accessToken: expect.any(String),
         });
       });
 
 
-    it('01-02 /blogs POST  = 201 create new blog for testing posts', async () => {
+    it('01-02 blogger/blogs POST = 201 create new blog for testing posts', async () => {
       const testsResponse = await request(app.getHttpServer())
         .post(endpoints.bloggerBlogs)
-        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
         .send({
           name: 'BlogForPosts',
           description: 'description BlogForPosts',
@@ -91,16 +103,40 @@ export function testBloggerCrud() {
       });
     });
 
-    it('01-02 /posts POST  = 201 create new post if all is OK', async () => {
+    it('01-05 blogger/blogs GET = 200 return all current users blogs with pagination', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .get(endpoints.bloggerBlogs)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
+        .expect(200);
+      const createdResponse = createResponse.body;
+      
+      expect(createdResponse).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 1,
+        items: [
+          {
+            id: expect.any(String),
+            name: 'BlogForPosts',
+            description: 'description BlogForPosts',
+            websiteUrl: 'https://www.someweb.com',
+            createdAt: expect.any(String),
+            isMembership: false,
+          },
+        ],
+      });
+    });
+
+    it('01-02 blogger/blogId/posts POST = 201 create new post if all is OK', async () => {
       const testsResponse = await request(app.getHttpServer())
-        .post(`${endpoints.bloggerBlogs}/posts`)
+        .post(`${endpoints.bloggerBlogs}/${firstCreatedBlogId}/posts`)
         //.post(`${endpoints.posts}/${createdPostId}/comments`)
-        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
         .send({
           title: 'newCreatedPost',
           shortDescription: 'newPostsShortDescription',
           content: 'some content',
-          blogId: firstCreatedBlogId,
         })
         .expect(201);
 
@@ -123,5 +159,85 @@ export function testBloggerCrud() {
         },
       });
     });
+
+    it('01-02 blogger/blogs/blogId PUT = 201 update blog', async () => {
+      const testsResponse = await request(app.getHttpServer())
+        .put(`${endpoints.bloggerBlogs}/${firstCreatedBlogId}`)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
+        .send({
+          name: 'Updated Blog',
+          description: 'Updated description',
+          websiteUrl: 'https://www.updatedsomeweb.com',
+        })
+        .expect(204);
+    });
+
+    it('01-05 blogger/blogs GET = 200 return array of one updated blog', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .get(endpoints.bloggerBlogs)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
+        .expect(200);
+      const createdResponse = createResponse.body;
+      
+      expect(createdResponse).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 1,
+        items: [
+          {
+            id: expect.any(String),
+            name: 'Updated Blog',
+            description: 'Updated description',
+            websiteUrl: 'https://www.updatedsomeweb.com',
+            createdAt: expect.any(String),
+            isMembership: false,
+          },
+        ],
+      });
+    });
+
+    it('01-06 blogger/blogs/blogsId/posts/postId UPDATE = 204', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .put(`${endpoints.bloggerBlogs}/${firstCreatedBlogId}/posts/${createdPostId}`)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
+        .send({
+          title: 'updatedTitle',
+          shortDescription: 'updatedShortDescription',
+          content: 'updated some content',
+        })
+        .expect(204);
+    });
+
+    it('01-06 blogger/blogs/blogsId/posts/postId DELETE = 204', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .delete(`${endpoints.bloggerBlogs}/${firstCreatedBlogId}/posts/${createdPostId}`)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
+        .expect(204);
+    });
+
+    it('01-06 blogger/blogs/blogsId DELETE = 204', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .delete(`${endpoints.bloggerBlogs}/${firstCreatedBlogId}`)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
+        .expect(204);
+    });
+
+    it('01-05 blogger/blogs GET = 200 return empty array after deleting blog', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .get(endpoints.bloggerBlogs)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
+        .expect(200);
+      const createdResponse = createResponse.body;
+      
+      expect(createdResponse).toEqual({
+        pagesCount: 0,
+        page: 1,
+        pageSize: 10,
+        totalCount: 0,
+        items: [],
+      });
+    });
+
   });
 }

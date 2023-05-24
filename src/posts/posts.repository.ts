@@ -12,7 +12,7 @@ export class PostsRepository {
     return !!result;
   }
 
-  async createPost(postDTO): Promise<string> {
+  async createPost(postDTO: PostDBType): Promise<string> {
     const newPost = new this.postModel(postDTO);
     await newPost.save();
     return newPost._id.toString();

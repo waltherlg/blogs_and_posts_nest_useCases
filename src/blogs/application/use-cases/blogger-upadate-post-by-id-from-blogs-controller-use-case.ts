@@ -6,7 +6,7 @@ import {
 } from '../../public.blogs.controller';
 import { CommandHandler } from '@nestjs/cqrs/dist/decorators';
 import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
-import { BlogActionResult } from 'src/blogs/helpers/blogs.enum.action.result';
+import { BlogActionResult } from '../../helpers/blogs.enum.action.result';
 import { UpdatePostByBlogsIdInputModelType } from 'src/blogs/blogger.blogs.controller';
 import { PostsRepository } from 'src/posts/posts.repository';
 
