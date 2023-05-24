@@ -72,10 +72,10 @@ export class Comment {
   likesCollection: Array<likesCollectionType>;
   countLikesAndDislikes() {
     return this.likesCollection!.reduce(
-      (acc, post) => {
-        if (post.status === 'Like') {
+      (acc, comment) => {
+        if (comment.status === 'Like') {
           acc.likesCount++;
-        } else if (post.status === 'Dislike') {
+        } else if (comment.status === 'Dislike') {
           acc.dislikesCount++;
         }
         return acc;

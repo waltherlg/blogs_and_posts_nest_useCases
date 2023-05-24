@@ -24,16 +24,11 @@ export class CommentsQueryRepository {
     if (!comment) {
       return null;
     }
-    if (userId && Types.ObjectId.isValid(userId)) {
-      const user = await this.userModel.findById(userId);
-      if (user) {
-        const likedComment = user.likedComments.find(
-          (e) => e.commentsId === commentId,
-        );
-        if (likedComment) {
-          comment.myStatus = likedComment.status;
-        }
-      }
+    const userCommentStatus = comment.likesCollection.find(
+      (p) => p.userId === userId,
+    );
+    if (userCommentStatus) {
+      comment.myStatus = userCommentStatus.status;
     }
     return comment.prepareCommentForOutput();
   }
@@ -41,7 +36,6 @@ export class CommentsQueryRepository {
     const commentsCount = await this.commentModel.countDocuments({
       $and: [{ parentType: 'post' }, { parentId: postId }],
     });
-    console.log(postId, mergedQueryParams, userId);
     const sortBy = mergedQueryParams.sortBy;
     const sortDirection = mergedQueryParams.sortDirection;
     const pageNumber = mergedQueryParams.pageNumber;
@@ -54,22 +48,14 @@ export class CommentsQueryRepository {
       .limit(+pageSize);
 
     let likedComment: Array<CommentsLikeType> = [];
-    if (Types.ObjectId.isValid(userId)) {
-      const user: UserDocument | null = await this.userModel.findOne({
-        _id: new Types.ObjectId(userId),
-      });
-      if (user) {
-        likedComment = user.likedComments;
-      }
-    }
 
     const outComments = comments.map((comment: CommentDocument) => {
-      const currentCommentId = comment._id.toString();
-      const isUserLikeIt = likedComment.find(
-        (e) => e.commentsId === currentCommentId,
+      
+      const userCommentStatus = comment.likesCollection.find(
+        (p) => p.userId === userId,
       );
-      if (isUserLikeIt) {
-        comment.myStatus = isUserLikeIt.status;
+      if (userCommentStatus) {
+        comment.myStatus = userCommentStatus.status;
       }
       return comment.prepareCommentForOutput();
     });

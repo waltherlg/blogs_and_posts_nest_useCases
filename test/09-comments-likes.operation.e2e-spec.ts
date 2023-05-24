@@ -231,9 +231,37 @@ export function testCommentLikesCrud() {
       });
     });
 
-    it('01-06 /posts/postId/like-status UPDATE = 204 like from user2', async () => {
+    it('01-02 posts/postId/comments POST = 201 user1 create new comment', async () => {
+      const testsResponse = await request(app.getHttpServer())
+        .post(`${endpoints.posts}/${createdPostId}/comments`)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
+        .send({
+          content: 'some comment for post1',
+        })
+        .expect(201);
+
+      const createdResponse = testsResponse.body;
+      createdCommentId = createdResponse.id;
+
+      expect(createdResponse).toEqual({
+        id: expect.any(String),
+        content: 'some comment for post1',
+        commentatorInfo: {
+          userId: expect.any(String),
+          userLogin: 'user1',
+        },
+        createdAt: expect.any(String),
+        likesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+        },
+      });
+    });
+
+    it('01-06 /comments/postId/like-status UPDATE = 204 like from user2', async () => {
       const createResponse = await request(app.getHttpServer())
-        .put(`${endpoints.posts}/${createdPostId}/like-status`)
+        .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser2}`)
         .send({
           likeStatus: 'Like',
@@ -241,9 +269,9 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /posts/postId/like-status UPDATE = 204 like from user3', async () => {
+    it('01-06 /comments/postId/like-status UPDATE = 204 like from user3', async () => {
       const createResponse = await request(app.getHttpServer())
-        .put(`${endpoints.posts}/${createdPostId}/like-status`)
+        .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser3}`)
         .send({
           likeStatus: 'Like',
@@ -251,9 +279,9 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /posts/postId/like-status UPDATE = 204 Dislike from user4', async () => {
+    it('01-06 /comments/postId/like-status UPDATE = 204 Dislike from user4', async () => {
       const createResponse = await request(app.getHttpServer())
-        .put(`${endpoints.posts}/${createdPostId}/like-status`)
+        .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser4}`)
         .send({
           likeStatus: 'Dislike',
@@ -261,9 +289,9 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /posts/postId/like-status UPDATE = 204 Dislike from user5', async () => {
+    it('01-06 /comments/postId/like-status UPDATE = 204 Dislike from user5', async () => {
       const createResponse = await request(app.getHttpServer())
-        .put(`${endpoints.posts}/${createdPostId}/like-status`)
+        .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser5}`)
         .send({
           likeStatus: 'Dislike',
@@ -271,43 +299,31 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-07 /posts GET = 200 return post for unauth user with 2 like and 2 dislike', async () => {
+    it('01-07 /comments GET = 200 return post for unauth user with 2 like and 2 dislike', async () => {
       const createResponse = await request(app.getHttpServer())
-        .get(`${endpoints.posts}/${createdPostId}`)
+        .get(`${endpoints.comments}/${createdCommentId}`)
         .expect(200);
       const createdResponse = createResponse.body;
 
       expect(createdResponse).toEqual({
-        id: createdPostId,
-        title: 'newCreatedPost',
-        shortDescription: 'newPostsShortDescription',
-        content: 'some content',
-        blogId: expect.any(String),
-        blogName: 'BlogForPosts',
+        id: expect.any(String),
+        content: 'some comment for post1',
+        commentatorInfo: {
+          userId: expect.any(String),
+          userLogin: 'user1',
+        },
         createdAt: expect.any(String),
-        extendedLikesInfo: {
+        likesInfo: {
           likesCount: 2,
           dislikesCount: 2,
           myStatus: 'None',
-          newestLikes: [
-            {
-              addedAt: expect.any(String),
-              login: 'user3',
-              userId: expect.any(String),
-            },
-            {
-              addedAt: expect.any(String),
-              login: 'user2',
-              userId: expect.any(String),
-            },
-          ],
         },
       });
     });
 
-    it('01-06 /posts/postId/like-status UPDATE = 204 Like from user4', async () => {
+    it('01-06 /comments/postId/like-status UPDATE = 204 Like from user4', async () => {
       const createResponse = await request(app.getHttpServer())
-        .put(`${endpoints.posts}/${createdPostId}/like-status`)
+        .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser4}`)
         .send({
           likeStatus: 'Like',
@@ -315,9 +331,9 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /posts/postId/like-status UPDATE = 204 Like from user5', async () => {
+    it('01-06 /comments/postId/like-status UPDATE = 204 Like from user5', async () => {
       const createResponse = await request(app.getHttpServer())
-        .put(`${endpoints.posts}/${createdPostId}/like-status`)
+        .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser5}`)
         .send({
           likeStatus: 'Like',
@@ -325,49 +341,32 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-07 /posts GET = 200 return post for auth user2 with 4 like and 3 last liked users', async () => {
+    it('01-07 /comments GET = 200 return post for auth user2 with 4 like and 3 last liked users', async () => {
       const createResponse = await request(app.getHttpServer())
-        .get(`${endpoints.posts}/${createdPostId}`)
+        .get(`${endpoints.comments}/${createdCommentId}`)
         .set('Authorization', `Bearer ${accessTokenUser2}`)
         .expect(200);
       const createdResponse = createResponse.body;
 
       expect(createdResponse).toEqual({
-        id: createdPostId,
-        title: 'newCreatedPost',
-        shortDescription: 'newPostsShortDescription',
-        content: 'some content',
-        blogId: expect.any(String),
-        blogName: 'BlogForPosts',
+        id: expect.any(String),
+        content: 'some comment for post1',
+        commentatorInfo: {
+          userId: expect.any(String),
+          userLogin: 'user1',
+        },
         createdAt: expect.any(String),
-        extendedLikesInfo: {
+        likesInfo: {
           likesCount: 4,
           dislikesCount: 0,
           myStatus: 'Like',
-          newestLikes: [
-            {
-              addedAt: expect.any(String),
-              login: 'user5',
-              userId: expect.any(String),
-            },
-            {
-              addedAt: expect.any(String),
-              login: 'user4',
-              userId: expect.any(String),
-            },
-            {
-              addedAt: expect.any(String),
-              login: 'user3',
-              userId: expect.any(String),
-            },
-          ],
         },
       });
     });
 
-    it('01-06 /posts/postId/like-status UPDATE = 204 Dislike from user5', async () => {
+    it('01-06 /comments/postId/like-status UPDATE = 204 Dislike from user5', async () => {
       const createResponse = await request(app.getHttpServer())
-        .put(`${endpoints.posts}/${createdPostId}/like-status`)
+        .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser5}`)
         .send({
           likeStatus: 'Dislike',
@@ -375,9 +374,9 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /posts/postId/like-status UPDATE = 204 None from user2', async () => {
+    it('01-06 /comments/postId/like-status UPDATE = 204 None from user2', async () => {
       const createResponse = await request(app.getHttpServer())
-        .put(`${endpoints.posts}/${createdPostId}/like-status`)
+        .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser2}`)
         .send({
           likeStatus: 'None',
@@ -385,38 +384,113 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-07 /posts GET = 200 return post for auth user5 with 2 like and 1 dislike, 2 last liked users, and my status Dislike', async () => {
+    it('01-07 /comments GET = 200 return post for auth user5 with 2 like and 1 dislike, 2 last liked users, and my status Dislike', async () => {
       const createResponse = await request(app.getHttpServer())
-        .get(`${endpoints.posts}/${createdPostId}`)
+        .get(`${endpoints.comments}/${createdCommentId}`)
         .set('Authorization', `Bearer ${accessTokenUser5}`)
         .expect(200);
       const createdResponse = createResponse.body;
 
       expect(createdResponse).toEqual({
-        id: createdPostId,
-        title: 'newCreatedPost',
-        shortDescription: 'newPostsShortDescription',
-        content: 'some content',
-        blogId: expect.any(String),
-        blogName: 'BlogForPosts',
+        id: expect.any(String),
+        content: 'some comment for post1',
+        commentatorInfo: {
+          userId: expect.any(String),
+          userLogin: 'user1',
+        },
         createdAt: expect.any(String),
-        extendedLikesInfo: {
+        likesInfo: {
           likesCount: 2,
           dislikesCount: 1,
           myStatus: 'Dislike',
-          newestLikes: [
-            {
-              addedAt: expect.any(String),
-              login: 'user4',
-              userId: expect.any(String),
-            },
-            {
-              addedAt: expect.any(String),
-              login: 'user3',
-              userId: expect.any(String),
-            },
-          ],
         },
+      });
+    });
+
+    it('01-07 posts/postId/comments GET = 200 user5 get comments by postId with status Dislike', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .get(`${endpoints.posts}/${createdPostId}/comments`)
+        .set('Authorization', `Bearer ${accessTokenUser5}`)
+        .expect(200);
+      const createdResponse = createResponse.body;
+
+      expect(createdResponse).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 1,
+        items: [{
+          id: expect.any(String),
+        content: 'some comment for post1',
+        commentatorInfo: {
+          userId: expect.any(String),
+          userLogin: 'user1',
+        },
+        createdAt: expect.any(String),
+        likesInfo: {
+          likesCount: 2,
+          dislikesCount: 1,
+          myStatus: 'Dislike',
+        },
+        }]
+      });
+    });
+
+    it('01-07 posts/postId/comments GET = 200 user4 get comments by postId with status Like', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .get(`${endpoints.posts}/${createdPostId}/comments`)
+        .set('Authorization', `Bearer ${accessTokenUser4}`)
+        .expect(200);
+      const createdResponse = createResponse.body;
+
+      expect(createdResponse).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 1,
+        items: [{
+          id: expect.any(String),
+        content: 'some comment for post1',
+        commentatorInfo: {
+          userId: expect.any(String),
+          userLogin: 'user1',
+        },
+        createdAt: expect.any(String),
+        likesInfo: {
+          likesCount: 2,
+          dislikesCount: 1,
+          myStatus: 'Like',
+        },
+        }]
+      });
+    });
+
+    it('01-07 posts/postId/comments GET = 200 user2 get comments by postId with status None', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .get(`${endpoints.posts}/${createdPostId}/comments`)
+        .set('Authorization', `Bearer ${accessTokenUser2}`)
+        .expect(200);
+      const createdResponse = createResponse.body;
+
+      expect(createdResponse).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 1,
+        items: [{
+          id: expect.any(String),
+        content: 'some comment for post1',
+        commentatorInfo: {
+          userId: expect.any(String),
+          userLogin: 'user1',
+        },
+        createdAt: expect.any(String),
+        likesInfo: {
+          likesCount: 2,
+          dislikesCount: 1,
+          myStatus: 'None',
+        },
+        }]
       });
     });
 
