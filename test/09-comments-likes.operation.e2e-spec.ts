@@ -259,7 +259,7 @@ export function testCommentLikesCrud() {
       });
     });
 
-    it('01-06 /comments/postId/like-status UPDATE = 204 like from user2', async () => {
+    it('01-06 /comments/commentId/like-status UPDATE = 204 like from user2', async () => {
       const createResponse = await request(app.getHttpServer())
         .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser2}`)
@@ -269,7 +269,7 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /comments/postId/like-status UPDATE = 204 like from user3', async () => {
+    it('01-06 /comments/commentId/like-status UPDATE = 204 like from user3', async () => {
       const createResponse = await request(app.getHttpServer())
         .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser3}`)
@@ -279,7 +279,7 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /comments/postId/like-status UPDATE = 204 Dislike from user4', async () => {
+    it('01-06 /comments/commentId/like-status UPDATE = 204 Dislike from user4', async () => {
       const createResponse = await request(app.getHttpServer())
         .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser4}`)
@@ -289,7 +289,7 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /comments/postId/like-status UPDATE = 204 Dislike from user5', async () => {
+    it('01-06 /comments/commentId/like-status UPDATE = 204 Dislike from user5', async () => {
       const createResponse = await request(app.getHttpServer())
         .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser5}`)
@@ -321,7 +321,7 @@ export function testCommentLikesCrud() {
       });
     });
 
-    it('01-06 /comments/postId/like-status UPDATE = 204 Like from user4', async () => {
+    it('01-06 /comments/commentId/like-status UPDATE = 204 Like from user4', async () => {
       const createResponse = await request(app.getHttpServer())
         .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser4}`)
@@ -331,7 +331,7 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /comments/postId/like-status UPDATE = 204 Like from user5', async () => {
+    it('01-06 /comments/commentId/like-status UPDATE = 204 Like from user5', async () => {
       const createResponse = await request(app.getHttpServer())
         .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser5}`)
@@ -364,7 +364,7 @@ export function testCommentLikesCrud() {
       });
     });
 
-    it('01-06 /comments/postId/like-status UPDATE = 204 Dislike from user5', async () => {
+    it('01-06 /comments/commentId/like-status UPDATE = 204 Dislike from user5', async () => {
       const createResponse = await request(app.getHttpServer())
         .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser5}`)
@@ -374,7 +374,7 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-06 /comments/postId/like-status UPDATE = 204 None from user2', async () => {
+    it('01-06 /comments/commentId/like-status UPDATE = 204 None from user2', async () => {
       const createResponse = await request(app.getHttpServer())
         .put(`${endpoints.comments}/${createdCommentId}/like-status`)
         .set('Authorization', `Bearer ${accessTokenUser2}`)
@@ -384,7 +384,7 @@ export function testCommentLikesCrud() {
         .expect(204);
     });
 
-    it('01-07 /comments GET = 200 return post for auth user5 with 2 like and 1 dislike, 2 last liked users, and my status Dislike', async () => {
+    it('01-07 /comments GET = 200 return comment for auth user5 with 2 like and 1 dislike, 2 last liked users, and my status Dislike', async () => {
       const createResponse = await request(app.getHttpServer())
         .get(`${endpoints.comments}/${createdCommentId}`)
         .set('Authorization', `Bearer ${accessTokenUser5}`)
