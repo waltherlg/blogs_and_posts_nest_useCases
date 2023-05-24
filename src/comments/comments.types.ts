@@ -14,6 +14,7 @@ export class CommentDBType {
     public likesCount: number,
     public dislikesCount: number,
     public myStatus: string,
+    public likesCollection: Array<likesCollectionType>
   ) {}
 }
 
@@ -67,7 +68,23 @@ export class Comment {
   @Prop({ required: true })
   @IsNotEmpty()
   myStatus: string;
+  @Prop()
+  likesCollection: Array<likesCollectionType>;
+  countLikesAndDislikes() {
+    return this.likesCollection!.reduce(
+      (acc, post) => {
+        if (post.status === 'Like') {
+          acc.likesCount++;
+        } else if (post.status === 'Dislike') {
+          acc.dislikesCount++;
+        }
+        return acc;
+      },
+      { likesCount: 0, dislikesCount: 0 },
+    );
+  }
   prepareCommentForOutput() {
+    const LikesAndDislikes = this.countLikesAndDislikes();
     return {
       id: this._id.toString(),
       content: this.content,
@@ -77,8 +94,8 @@ export class Comment {
       },
       createdAt: this.createdAt,
       likesInfo: {
-        likesCount: this.likesCount,
-        dislikesCount: this.dislikesCount,
+        likesCount: LikesAndDislikes.likesCount,
+        dislikesCount: LikesAndDislikes.dislikesCount,
         myStatus: this.myStatus,
       },
     };
@@ -87,6 +104,7 @@ export class Comment {
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 CommentSchema.methods = {
+  countLikesAndDislikes: Comment.prototype.countLikesAndDislikes,
   prepareCommentForOutput: Comment.prototype.prepareCommentForOutput,
 };
 

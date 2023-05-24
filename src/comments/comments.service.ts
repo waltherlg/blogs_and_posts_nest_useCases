@@ -27,6 +27,7 @@ export class CommentsService {
       0,
       0,
       'None',
+      []
     );
     const createdCommentId = await this.commentsRepository.createComment(
       CommentDTO,

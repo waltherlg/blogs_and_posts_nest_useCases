@@ -8,6 +8,11 @@ export class CommentsRepository {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
   ) {}
+  async saveComment(comment: CommentDocument) {
+    const result = await comment.save();
+    return !!result;
+  }
+
   async createComment(commentDTO: CommentDBType): Promise<string> {
     const comment = new this.commentModel(commentDTO);
     await comment.save();
