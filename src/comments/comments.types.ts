@@ -89,3 +89,10 @@ export const CommentSchema = SchemaFactory.createForClass(Comment);
 CommentSchema.methods = {
   prepareCommentForOutput: Comment.prototype.prepareCommentForOutput,
 };
+
+type likesCollectionType = {
+  addedAt: string;
+  userId: string;
+  login: string;
+  status: string;
+};
