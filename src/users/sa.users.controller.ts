@@ -31,6 +31,8 @@ import { CheckService } from '../other.services/check.service';
 import { CustomNotFoundException, UserNotFoundException } from '../exceptions/custom.exceptions';
 import { BasicAuthGuard } from '../auth/guards/auth.guards';
 import { StringTrimNotEmpty } from '../middlewares/validators';
+import { CommandBus } from '@nestjs/cqrs';
+import { BanStatusChangeCommand } from './use-cases/ban-status-change-use-case';
 export class CreateUserInputModelType {
   @StringTrimNotEmpty()
   @Length(3, 10)
@@ -47,7 +49,7 @@ export class CreateUserInputModelType {
 }
 export class BanUserInputModel {
   @IsBoolean()
-  IsBanned: boolean;
+  isBanned: boolean;
   @StringTrimNotEmpty()
   @Length(20, 1000)
   banReason: string;
@@ -59,6 +61,7 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly usersQueryRepository: UsersQueryRepository,
     private readonly checkService: CheckService,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Put(':userId/ban')
@@ -67,6 +70,7 @@ export class UsersController {
     if(!await this.checkService.isUserExist(userId)){
       throw new CustomNotFoundException('user')
     }
+    await this.commandBus.execute(new BanStatusChangeCommand(userId, banDTO))
   }
 
     //add all, banned, not banned in query params

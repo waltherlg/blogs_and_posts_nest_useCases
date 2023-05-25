@@ -21,6 +21,7 @@ export class UserDBType {
     public email: string,
     public createdAt: string,
     public isBanned: boolean,
+    public banReason: string | null,
     public confirmationCode: string | null,
     public expirationDateOfConfirmationCode: Date | null,
     public isConfirmed: boolean,
@@ -53,6 +54,8 @@ export class User {
   createdAt: string;
   @Prop()
   isBanned: boolean;
+  @Prop()
+  banReason: string | null;
   @Prop()
   confirmationCode: string | null;
   @Prop()

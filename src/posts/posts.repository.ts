@@ -41,8 +41,10 @@ export class PostsRepository {
  }
 
  async setBanStatusForPosts(userId: string, isBanned: boolean): Promise<boolean>{
-  const result = await this.postModel.updateMany({userId: userId}, {$set: {isBanned: isBanned}})
-  return !!result
+  const banPostsResult = await this.postModel.updateMany({userId: userId}, {$set: {isBanned: isBanned}})
+  const banLikesPostResult = await this.postModel.updateMany()
+
+  return !!banLikesPostResult
  }
 
 
