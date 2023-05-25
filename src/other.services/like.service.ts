@@ -91,6 +91,7 @@ export class LikeService {
         addedAt: createdAt.toISOString(),
         userId,
         login: user.login,
+        isBanned: false,
         status: status,
       };
       post.likesCollection.push(newLike);
@@ -123,6 +124,7 @@ export class LikeService {
         addedAt: createdAt.toISOString(),
         userId,
         login: user.login,
+        isBanned: false,
         status: status,
       };
       comment.likesCollection.push(newLike);

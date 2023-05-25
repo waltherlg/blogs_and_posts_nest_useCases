@@ -8,6 +8,7 @@ export class PostDBType {
     public shortDescription: string,
     public content: string,
     public userId: string | null,
+    public isBanned: boolean,
     public blogId: string,
     public blogName: string,
     public createdAt: string,
@@ -32,6 +33,8 @@ export class Post {
   content: string;
   @Prop()
   userId: string;
+  @Prop()
+  isBanned: boolean;
   @Prop()
   blogId: string;
   @Prop()
@@ -124,6 +127,7 @@ type likesCollectionType = {
   addedAt: string;
   userId: string;
   login: string;
+  isBanned: boolean;
   status: string;
 };
 

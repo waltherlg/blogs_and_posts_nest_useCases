@@ -26,6 +26,7 @@ export class PostsService {
       postCreateInputModel.shortDescription,
       postCreateInputModel.content,
       userId,
+      false,
       postCreateInputModel.blogId,
       blog.name,
       new Date().toISOString(),

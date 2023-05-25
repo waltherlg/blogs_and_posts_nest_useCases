@@ -35,6 +35,7 @@ export class CreatePostFromBloggerControllerUseCase implements ICommandHandler<C
       command.postCreateDto.shortDescription,
       command.postCreateDto.content,
       command.userId,
+      false,
       command.blogId,
       blog.name,
       new Date().toISOString(),

@@ -23,6 +23,7 @@ export class CommentsService {
       content,
       userId!,
       user!.login,
+      false,
       new Date().toISOString(),
       0,
       0,

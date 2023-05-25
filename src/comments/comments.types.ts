@@ -10,6 +10,7 @@ export class CommentDBType {
     public content: string,
     public userId: string,
     public userLogin: string,
+    public isBanned: boolean,
     public createdAt: string,
     public likesCount: number,
     public dislikesCount: number,
@@ -56,6 +57,9 @@ export class Comment {
   @Prop({ required: true })
   @IsNotEmpty()
   userLogin: string;
+  @Prop({ required: true })
+  @IsNotEmpty()
+  isBanned: boolean;
   @Prop({ required: true })
   @IsNotEmpty()
   createdAt: string;
@@ -112,5 +116,6 @@ type likesCollectionType = {
   addedAt: string;
   userId: string;
   login: string;
+  isBanned: boolean;
   status: string;
 };
