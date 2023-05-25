@@ -80,7 +80,11 @@ export class UsersDevicesRepository {
     }
     return userDevice;
   }
-  async deleteAllUsersDevices() {
-    return await this.usersDeviseModel.deleteMany({});
+  async deleteAllUserDevicesById(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      return false;
+    }
+    const result = await this.usersDeviseModel.deleteMany({userId: userId});
+    return !!result
   }
 }

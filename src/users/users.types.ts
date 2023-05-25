@@ -20,6 +20,7 @@ export class UserDBType {
     public passwordHash: string,
     public email: string,
     public createdAt: string,
+    public isBanned: boolean,
     public confirmationCode: string | null,
     public expirationDateOfConfirmationCode: Date | null,
     public isConfirmed: boolean,
@@ -50,6 +51,8 @@ export class User {
   email: string;
   @Prop()
   createdAt: string;
+  @Prop()
+  isBanned: boolean;
   @Prop()
   confirmationCode: string | null;
   @Prop()

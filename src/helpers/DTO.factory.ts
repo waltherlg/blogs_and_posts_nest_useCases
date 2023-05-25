@@ -16,6 +16,7 @@ export class DTOFactory {
       passwordHash,
       createUserData.email,
       new Date().toISOString(),
+      false,
       createUserData.confirmationCode || null,
       createUserData.expirationDateOfConfirmationCode || null,
       createUserData.isConfirmed || false,
