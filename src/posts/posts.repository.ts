@@ -35,6 +35,17 @@ export class PostsRepository {
     }
     return post;
   }
+
+ async getAllPostsByUserId(userId): Promise<Array<PostDBType>>{
+  return await this.postModel.find({userId: userId})
+ }
+
+ async setBanStatusForPosts(userId: string, isBanned: boolean): Promise<boolean>{
+  const result = await this.postModel.updateMany({userId: userId}, {$set: {isBanned: isBanned}})
+  return !!result
+ }
+
+
   async deleteAllPosts() {
     await this.postModel.deleteMany({});
   }

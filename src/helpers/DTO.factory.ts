@@ -17,6 +17,7 @@ export class DTOFactory {
       createUserData.email,
       new Date().toISOString(),
       false,
+      null,
       createUserData.confirmationCode || null,
       createUserData.expirationDateOfConfirmationCode || null,
       createUserData.isConfirmed || false,
