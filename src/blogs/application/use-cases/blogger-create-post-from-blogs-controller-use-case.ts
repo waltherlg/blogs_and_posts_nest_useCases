@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-import { BlogsRepository } from '../../blogs.repository';
+import { BlogsRepository } from '../../infrostracture/blogs.repository';
 import {
   UpdateBlogInputModelType,
-} from '../../public.blogs.controller';
+} from '../../api/public.blogs.controller';
 import { CommandHandler } from '@nestjs/cqrs/dist/decorators';
 import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
 import { BlogActionResult } from 'src/blogs/helpers/blogs.enum.action.result';
-import { CreatePostByBlogsIdInputModelType } from 'src/blogs/blogger.blogs.controller';
+import { CreatePostByBlogsIdInputModelType } from 'src/blogs/api/blogger.blogs.controller';
 import { PostsRepository } from 'src/posts/posts.repository';
 import { PostDBType } from 'src/posts/posts.types';
 import { Types } from 'mongoose';

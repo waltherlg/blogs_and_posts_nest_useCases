@@ -7,6 +7,6 @@ import { testCommentLikesCrud } from './09-comments-likes.operation.e2e-spec';
 
 describe('End-to-End Tests', () => {
   //testBloggerCrud()
-  //testPostLikesCrud()
-  testCommentLikesCrud()
+  testPostLikesCrud()
+  //testCommentLikesCrud()
 });

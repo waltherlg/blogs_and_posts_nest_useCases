@@ -7,27 +7,27 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { BlogsService } from './blogs.service';
-import { BlogsRepository } from './blogs.repository';
-import { BlogsQueryRepository } from './blogs.query.repository';
+import { BlogsService } from '../domain/blogs.service';
+import { BlogsRepository } from '../infrostracture/blogs.repository';
+import { BlogsQueryRepository } from '../infrostracture/blogs.query.repository';
 import {
   DEFAULT_BLOGS_QUERY_PARAMS,
   RequestQueryParamsModel,
   RequestBlogsQueryModel,
   DEFAULT_QUERY_PARAMS,
-} from '../models/types';
+} from '../../models/types';
 import { MaxLength } from 'class-validator';
-import { CheckService } from '../other.services/check.service';
-import { PostsService } from '../posts/posts.service';
-import { PostsQueryRepository } from '../posts/posts.query.repository';
+import { CheckService } from '../../other.services/check.service';
+import { PostsService } from '../../posts/posts.service';
+import { PostsQueryRepository } from '../../posts/posts.query.repository';
 
 import {
   BlogNotFoundException,
   CustomisableException,
-} from '../exceptions/custom.exceptions';
-import { IsCustomUrl, StringTrimNotEmpty } from '../middlewares/validators';
-import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
-import { UpdateBlogByIdFromUriUseCase } from './application/use-cases/blogger-upadate-blog-using-id-from-uri-use-case';
+} from '../../exceptions/custom.exceptions';
+import { IsCustomUrl, StringTrimNotEmpty } from '../../middlewares/validators';
+import { OptionalJwtAuthGuard } from '../../auth/guards/optional-jwt-auth.guard';
+import { UpdateBlogByIdFromUriUseCase } from '../application/use-cases/blogger-upadate-blog-using-id-from-uri-use-case';
 import { CommandBus } from '@nestjs/cqrs';
 
 export class CreateBlogInputModelType {

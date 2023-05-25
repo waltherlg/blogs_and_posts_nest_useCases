@@ -1,5 +1,5 @@
 import { CommentsRepository } from '../../comments/comments.repository';
-import { BlogsRepository } from 'src/blogs/blogs.repository';
+import { BlogsRepository } from 'src/blogs/infrostracture/blogs.repository';
 import { UsersRepository } from '../users.repository';
 import { Injectable } from "@nestjs/common";
 import { PostsRepository } from 'src/posts/posts.repository';

@@ -7,17 +7,17 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { BlogsQueryRepository } from './blogs.query.repository';
+import { BlogsQueryRepository } from '../infrostracture/blogs.query.repository';
 import {
   DEFAULT_BLOGS_QUERY_PARAMS,
   RequestBlogsQueryModel,
-} from '../models/types';
+} from '../../models/types';
 
 
-import { BasicAuthGuard } from '../auth/guards/auth.guards';
+import { BasicAuthGuard } from '../../auth/guards/auth.guards';
 import { CommandBus } from '@nestjs/cqrs';
-import { BindBlogWithUserCommand } from './application/use-cases/sa-bind-blog-with-user-use-case';
-import { BlogActionResult, handleBlogOperationResult } from './helpers/blogs.enum.action.result';
+import { BindBlogWithUserCommand } from '../application/use-cases/sa-bind-blog-with-user-use-case';
+import { BlogActionResult, handleBlogOperationResult } from '../helpers/blogs.enum.action.result';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/blogs')

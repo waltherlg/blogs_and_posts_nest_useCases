@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Blog, BlogDBType, BlogDocument } from './blogs.types';
+import { Blog, BlogDBType, BlogDocument } from '../blogs.types';
 
-import { BlogsRepository } from './blogs.repository';
+import { BlogsRepository } from '../infrostracture/blogs.repository';
 import { Types } from 'mongoose';
 import {
   CreateBlogInputModelType,
   UpdateBlogInputModelType,
-} from './public.blogs.controller';
+} from '../api/public.blogs.controller';
 import { validateOrReject } from 'class-validator';
-import { BlogNotFoundException } from '../exceptions/custom.exceptions';
+import { BlogNotFoundException } from '../../exceptions/custom.exceptions';
 
 const validateOrRejectModel = async (model: any, ctor: { new (): any }) => {
   if (model instanceof ctor === false) {

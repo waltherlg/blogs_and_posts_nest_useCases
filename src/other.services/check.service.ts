@@ -1,4 +1,4 @@
-import { BlogsRepository } from '../blogs/blogs.repository';
+import { BlogsRepository } from '../blogs/infrostracture/blogs.repository';
 import { Injectable } from '@nestjs/common';
 import { PostsRepository } from '../posts/posts.repository';
 import { UsersRepository } from '../users/users.repository';

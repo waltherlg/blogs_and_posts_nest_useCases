@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { BlogDBType } from '../../blogs.types';
 
-import { BlogsRepository } from '../../blogs.repository';
+import { BlogsRepository } from '../../infrostracture/blogs.repository';
 import { Types } from 'mongoose';
 import {
   CreateBlogInputModelType,
-} from '../../public.blogs.controller';
+} from '../../api/public.blogs.controller';
 import { CommandHandler } from '@nestjs/cqrs/dist';
 import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
 

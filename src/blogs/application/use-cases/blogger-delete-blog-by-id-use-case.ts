@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { BlogsRepository } from "src/blogs/blogs.repository";
+import { BlogsRepository } from "src/blogs/infrostracture/blogs.repository";
 import { BlogActionResult } from "src/blogs/helpers/blogs.enum.action.result";
 
 export class DeleteBlogByIdFromUriCommand {

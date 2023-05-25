@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import { BlogsRepository } from '../../blogs.repository';
+import { BlogsRepository } from '../../infrostracture/blogs.repository';
 import {
   UpdateBlogInputModelType,
-} from '../../public.blogs.controller';
+} from '../../api/public.blogs.controller';
 import { CommandHandler } from '@nestjs/cqrs/dist/decorators';
 import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
 import { BlogActionResult } from '../../helpers/blogs.enum.action.result';
