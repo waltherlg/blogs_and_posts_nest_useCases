@@ -18,6 +18,7 @@ export class DTOFactory {
       new Date().toISOString(),
       false,
       null,
+      null,
       createUserData.confirmationCode || null,
       createUserData.expirationDateOfConfirmationCode || null,
       createUserData.isConfirmed || false,
