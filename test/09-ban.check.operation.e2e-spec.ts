@@ -4,8 +4,8 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { Types } from 'mongoose';
 import { endpoints } from './helpers/routing';
-export function banCheckOperation() {
-  describe('Checking User Ban for Get Requests (e2e). ', () => {
+export function testCommentLikesCrud() {
+  describe('Post Likes Crud CRUD operation \"if all is ok\" (e2e). ', () => {
     let app: INestApplication;
 
     const basicAuthRight = Buffer.from('admin:qwerty').toString('base64');
@@ -33,14 +33,8 @@ export function banCheckOperation() {
     });
 
     let BlogId1User1: string;
-    let PostId1User1: string;
+    let createdPostId: string;
     let createdCommentId: string;
-
-    let userId1: string
-    let userId2: string
-    let userId3: string
-    let userId4: string
-    let userId5: string
 
     it('00-00 testing/all-data DELETE = 204 removeAllData', async () => {
       await request(app.getHttpServer())
@@ -49,17 +43,14 @@ export function banCheckOperation() {
     });
 
     it('00-00 auth/registration = 204 register user1', async () => {
-      const createResponse = await request(app.getHttpServer())
-        .post(`${endpoints.saUsers}`)
-        .set('Authorization', `Basic ${basicAuthRight}`)
+      await request(app.getHttpServer())
+        .post(`${endpoints.auth}/registration`)
         .send({
           login: 'user1',
           password: 'qwerty',
           email: 'ruslan@gmail-1.com',
         })
         .expect(204);
-        const createdResponse = createResponse.body;
-        userId1 = createdResponse.id; 
     });
 
     it('00-00 login user1 = 204 login user1', async () => {
@@ -78,17 +69,14 @@ export function banCheckOperation() {
     });
 
     it('00-00 auth/registration = 204 register user2', async () => {
-      const createResponse = await request(app.getHttpServer())
-      .post(`${endpoints.saUsers}`)
-      .set('Authorization', `Basic ${basicAuthRight}`)
+      await request(app.getHttpServer())
+        .post(`${endpoints.auth}/registration`)
         .send({
           login: 'user2',
           password: 'qwerty',
           email: 'ruslan@gmail-2.com',
         })
         .expect(204);
-        const createdResponse = createResponse.body;
-        userId2 = createdResponse.id; 
     });
 
     it('00-00 login user2 = 204 login user2', async () => {
@@ -107,17 +95,14 @@ export function banCheckOperation() {
     });
 
     it('00-00 auth/registration = 204 register user3', async () => {
-      const createResponse = await request(app.getHttpServer())
-      .post(`${endpoints.saUsers}`)
-      .set('Authorization', `Basic ${basicAuthRight}`)
+      await request(app.getHttpServer())
+        .post(`${endpoints.auth}/registration`)
         .send({
           login: 'user3',
           password: 'qwerty',
           email: 'ruslan@gmail-3.com',
         })
-        .expect(204)
-        const createdResponse = createResponse.body;
-        userId3 = createdResponse.id; ;
+        .expect(204);
     });
 
     it('00-00 login user3 = 204 login user3', async () => {
@@ -135,19 +120,15 @@ export function banCheckOperation() {
       });
     });
 
-
     it('00-00 auth/registration = 204 register user4', async () => {
-      const createResponse = await request(app.getHttpServer())
-      .post(`${endpoints.saUsers}`)
-      .set('Authorization', `Basic ${basicAuthRight}`)
+      await request(app.getHttpServer())
+        .post(`${endpoints.auth}/registration`)
         .send({
           login: 'user4',
           password: 'qwerty',
           email: 'ruslan@gmail-4.com',
         })
         .expect(204);
-        const createdResponse = createResponse.body;
-        userId4 = createdResponse.id; 
     });
 
     it('00-00 login user4 = 204 login user4', async () => {
@@ -167,17 +148,14 @@ export function banCheckOperation() {
 
     
     it('00-00 auth/registration = 204 register user5', async () => {
-      const createResponse = await request(app.getHttpServer())
-      .post(`${endpoints.saUsers}`)
-      .set('Authorization', `Basic ${basicAuthRight}`)
+      await request(app.getHttpServer())
+        .post(`${endpoints.auth}/registration`)
         .send({
           login: 'user5',
           password: 'qwerty',
           email: 'ruslan@gmail-5.com',
         })
         .expect(204);
-        const createdResponse = createResponse.body;
-        userId5 = createdResponse.id; 
     });
 
     it('00-00 login user5 = 204 login user5', async () => {
@@ -194,6 +172,7 @@ export function banCheckOperation() {
         accessToken: expect.any(String),
       });
     });
+
 
     it('01-02 blogger/blogs POST = 201 user1 create new blog', async () => {
       const testsResponse = await request(app.getHttpServer())
@@ -219,32 +198,6 @@ export function banCheckOperation() {
       });
     });
 
-    let BlogId1User2: string
-
-    it('01-02 blogger/blogs POST = 201 user2 create new blog', async () => {
-      const testsResponse = await request(app.getHttpServer())
-        .post(endpoints.bloggerBlogs)
-        .set('Authorization', `Bearer ${accessTokenUser2}`)
-        .send({
-          name: 'Blog1User2',
-          description: 'description BlogForPosts',
-          websiteUrl: 'https://www.someweb.com',
-        })
-        .expect(201);
-
-      const createdResponseOfFirstBlog = testsResponse.body;
-      BlogId1User2 = createdResponseOfFirstBlog.id;
-
-      expect(createdResponseOfFirstBlog).toEqual({
-        id: expect.any(String),
-        name: 'Blog1User2',
-        description: 'description BlogForPosts',
-        websiteUrl: 'https://www.someweb.com',
-        createdAt: expect.any(String),
-        isMembership: false,
-      });
-    });
-
     it('01-02 blogger/blogId/posts POST = 201 user1 create new post', async () => {
       const testsResponse = await request(app.getHttpServer())
         .post(`${endpoints.bloggerBlogs}/${BlogId1User1}/posts`)
@@ -258,7 +211,7 @@ export function banCheckOperation() {
         .expect(201);
 
       const createdResponse = testsResponse.body;
-      PostId1User1 = createdResponse.id;
+      createdPostId = createdResponse.id;
 
       expect(createdResponse).toEqual({
         id: expect.any(String),
@@ -277,51 +230,9 @@ export function banCheckOperation() {
       });
     });
 
-    let PostId1User2: string
-
-    it('01-02 blogger/blogId/posts POST = 201 user2 create new post', async () => {
-      const testsResponse = await request(app.getHttpServer())
-        .post(`${endpoints.bloggerBlogs}/${BlogId1User2}/posts`)
-        //.post(`${endpoints.posts}/${createdPostId}/comments`)
-        .set('Authorization', `Bearer ${accessTokenUser2}`)
-        .send({
-          title: 'BannedPost',
-          shortDescription: 'newPostsShortDescription',
-          content: 'some content',
-        })
-        .expect(201);
-
-      const createdResponse = testsResponse.body;
-      PostId1User2 = createdResponse.id;
-
-      expect(createdResponse).toEqual({
-        id: expect.any(String),
-        title: 'BannedPost',
-        shortDescription: 'newPostsShortDescription',
-        content: 'some content',
-        blogId: expect.any(String),
-        blogName: 'Blog1User2',
-        createdAt: expect.any(String),
-        extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: 'None',
-          newestLikes: [],
-        },
-      });
-    });
-
-    it('01-08 sa/users/userId/ban PUT = 204 ban user2', async () => {
-      await request(app.getHttpServer())
-      .put(`${endpoints.saUsers}/${userId2}/ban`)
-    })
-
-
-
-/*
     it('01-02 posts/postId/comments POST = 201 user1 create new comment', async () => {
       const testsResponse = await request(app.getHttpServer())
-        .post(`${endpoints.posts}/${PostId1User1}/comments`)
+        .post(`${endpoints.posts}/${createdPostId}/comments`)
         .set('Authorization', `Bearer ${accessTokenUser1}`)
         .send({
           content: 'some comment for post1',
@@ -349,7 +260,7 @@ export function banCheckOperation() {
 
     it('01-02 posts/postId/comments POST = 201 user2 create new comment', async () => {
       const testsResponse = await request(app.getHttpServer())
-        .post(`${endpoints.posts}/${PostId1User1}/comments`)
+        .post(`${endpoints.posts}/${createdPostId}/comments`)
         .set('Authorization', `Bearer ${accessTokenUser2}`)
         .send({
           content: 'some comment for post1',
@@ -525,7 +436,7 @@ export function banCheckOperation() {
 
     it('01-07 posts/postId/comments GET = 200 user5 get comments by postId with status Dislike', async () => {
       const createResponse = await request(app.getHttpServer())
-        .get(`${endpoints.posts}/${PostId1User1}/comments`)
+        .get(`${endpoints.posts}/${createdPostId}/comments`)
         .set('Authorization', `Bearer ${accessTokenUser5}`)
         .expect(200);
       const createdResponse = createResponse.body;
@@ -554,7 +465,7 @@ export function banCheckOperation() {
 
     it('01-07 posts/postId/comments GET = 200 user4 get comments by postId with status Like', async () => {
       const createResponse = await request(app.getHttpServer())
-        .get(`${endpoints.posts}/${PostId1User1}/comments`)
+        .get(`${endpoints.posts}/${createdPostId}/comments`)
         .set('Authorization', `Bearer ${accessTokenUser4}`)
         .expect(200);
       const createdResponse = createResponse.body;
@@ -583,7 +494,7 @@ export function banCheckOperation() {
 
     it('01-07 posts/postId/comments GET = 200 user2 get comments by postId with status None', async () => {
       const createResponse = await request(app.getHttpServer())
-        .get(`${endpoints.posts}/${PostId1User1}/comments`)
+        .get(`${endpoints.posts}/${createdPostId}/comments`)
         .set('Authorization', `Bearer ${accessTokenUser2}`)
         .expect(200);
       const createdResponse = createResponse.body;
@@ -609,7 +520,6 @@ export function banCheckOperation() {
         }]
       });
     });
-    */
 
 
   });
