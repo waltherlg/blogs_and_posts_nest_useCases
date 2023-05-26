@@ -52,7 +52,7 @@ export class AuthService {
     const user = await this.usersRepository.findUserByLoginOrEmail(
       loginOrEmail,
     );
-    if (!user) {
+    if (!user || user.isBanned === true) {
       return null;
     }
     const userHash = user.passwordHash;

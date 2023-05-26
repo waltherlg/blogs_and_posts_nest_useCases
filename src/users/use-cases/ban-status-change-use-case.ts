@@ -21,7 +21,7 @@ export class BanStatusChangeUseCase implements ICommandHandler<BanStatusChangeCo
         private readonly postsRepository: PostsRepository,
         private readonly commentsRepository: CommentsRepository,){}
 
-        async execute(command: BanStatusChangeCommand){
+        async execute(command: BanStatusChangeCommand): Promise<boolean>{
             const userId = command.userId
             const isBanned = command.banDto.isBanned
 
@@ -38,6 +38,12 @@ export class BanStatusChangeUseCase implements ICommandHandler<BanStatusChangeCo
             const userBanResult = await this.usersRepository.saveUser(user)
 
             const postsBanResult = await this.postsRepository.setBanStatusForPosts(userId, isBanned)
+
+            const commentBanResult = await this.commentsRepository.setBanStatusForComments(userId, isBanned)
+
+            if (userBanResult && postsBanResult && commentBanResult){
+                return true
+            } else return false
 
             
 

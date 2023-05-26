@@ -113,4 +113,15 @@ export class CommentsRepository {
     const result = await comment.save();
     return !!result;
   }
+
+  async setBanStatusForComments(userId: string, isBanned: boolean): Promise<boolean>{
+    const banCommentResult = await this.commentModel.updateMany({userId: userId}, {$set: {isBanned: isBanned}})
+    const banLikesCommentResult = await this.commentModel.updateMany(
+      { "likesCollection.userId": userId },
+      { $set: { "likesCollection.$[elem].isBanned": isBanned } },
+      { arrayFilters: [{ "elem.userId": userId }] }
+    );
+  
+    return !!banLikesCommentResult
+   } 
 }

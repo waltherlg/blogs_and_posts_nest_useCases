@@ -42,11 +42,14 @@ export class PostsRepository {
 
  async setBanStatusForPosts(userId: string, isBanned: boolean): Promise<boolean>{
   const banPostsResult = await this.postModel.updateMany({userId: userId}, {$set: {isBanned: isBanned}})
-  const banLikesPostResult = await this.postModel.updateMany()
+  const banLikesPostResult = await this.postModel.updateMany(
+    { "likesCollection.userId": userId },
+    { $set: { "likesCollection.$[elem].isBanned": isBanned } },
+    { arrayFilters: [{ "elem.userId": userId }] }
+  );
 
   return !!banLikesPostResult
  }
-
 
   async deleteAllPosts() {
     await this.postModel.deleteMany({});
