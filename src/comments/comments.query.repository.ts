@@ -21,7 +21,7 @@ export class CommentsQueryRepository {
     const comment: CommentDocument = await this.commentModel.findById(
       commentId,
     );
-    if (!comment) {
+    if (!comment || comment.isBanned === true) {
       return null;
     }
     const userCommentStatus = comment.likesCollection.find(
@@ -34,7 +34,9 @@ export class CommentsQueryRepository {
   }
   async getAllCommentsByPostId(postId: string, mergedQueryParams, userId?) {
     const commentsCount = await this.commentModel.countDocuments({
-      $and: [{ parentType: 'post' }, { parentId: postId }],
+      parentType: 'post',
+      parentId: postId,
+      isBanned: { $ne: true }
     });
     const sortBy = mergedQueryParams.sortBy;
     const sortDirection = mergedQueryParams.sortDirection;
@@ -42,7 +44,11 @@ export class CommentsQueryRepository {
     const pageSize = mergedQueryParams.pageSize;
 
     const comments = await this.commentModel
-      .find({ $and: [{ parentType: 'post' }, { parentId: postId }] })
+      .find({
+        parentType: 'post',
+        parentId: postId,
+        isBanned: { $ne: true }
+      })
       .sort({ [sortBy]: this.sortByDesc(sortDirection) })
       .skip(this.skipPage(pageNumber, pageSize))
       .limit(+pageSize);
