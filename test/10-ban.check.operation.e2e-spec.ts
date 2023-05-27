@@ -351,6 +351,61 @@ export function banCheckOperation() {
       });
     });
 
+    it('01-08 sa/users/userId/ban PUT = 204 ban user2', async () => {
+      await request(app.getHttpServer())
+      .put(`${endpoints.saUsers}/${userId2}/ban`)
+      .set('Authorization', `Basic ${basicAuthRight}`)
+      .send(userTest.inputUnbanUser)
+      .expect(204)
+    })
+
+    it('01-05 /posts GET = 200 return all Posts with pagination', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .get(endpoints.posts)
+        .expect(200);
+      const createdResponse = createResponse.body;
+
+      expect(createdResponse).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 2,
+        items: [
+          {
+            id: expect.any(String),
+            title: 'BannedPost',
+            shortDescription: 'newPostsShortDescription',
+            content: 'some content',
+            blogId: expect.any(String),
+            blogName: 'Blog1User2',
+            createdAt: expect.any(String),
+            extendedLikesInfo: {
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None',
+              newestLikes: [],
+            },
+          },
+          {
+            id: expect.any(String),
+            title: 'newCreatedPost',
+            shortDescription: 'newPostsShortDescription',
+            content: 'some content',
+            blogId: BlogId1User1,
+            blogName: 'BlogForPosts',
+            createdAt: expect.any(String),
+            extendedLikesInfo: {
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None',
+              newestLikes: [],
+            },        
+          },
+
+        ],
+      });
+    });
+
 
 
 /*

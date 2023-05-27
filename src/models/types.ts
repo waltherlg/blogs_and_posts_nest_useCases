@@ -24,6 +24,13 @@ export const DEFAULT_BLOGS_QUERY_PARAMS: RequestBlogsQueryModel = {
   pageSize: '10',
 };
 
+export type RequestUsersQueryModel = RequestQueryParamsModel & {
+  
+  searchLoginTerm: string;
+  searchEmailTerm: string;
+  banStatus: string;
+};
+
 export const DEFAULT_USERS_QUERY_PARAMS: RequestUsersQueryModel = {
   sortBy: 'createdAt',
   sortDirection: 'desc',
@@ -31,12 +38,12 @@ export const DEFAULT_USERS_QUERY_PARAMS: RequestUsersQueryModel = {
   pageSize: '10',
   searchLoginTerm: '',
   searchEmailTerm: '',
+  banStatus: 'all'
 };
 
-export type RequestUsersQueryModel = RequestQueryParamsModel & {
-  searchLoginTerm: string;
-  searchEmailTerm: string;
-};
+
+
+
 
 export type PaginationOutputModel<T> = {
   pagesCount: number;

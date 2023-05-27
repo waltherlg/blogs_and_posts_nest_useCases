@@ -8,10 +8,6 @@ import { PaginationOutputModel } from '../models/types';
 export class UsersQueryRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async saveUser(user: UserDocument) {
-    const result = await user.save();
-    return !!result;
-  }
   async getUserById(userId): Promise<UserTypeOutput | null> {
     if (!Types.ObjectId.isValid(userId)) {
       return null;
@@ -26,22 +22,27 @@ export class UsersQueryRepository {
   async getAllUsers(
     mergedQueryParams,
   ): Promise<PaginationOutputModel<UserTypeOutput>> {
-    const usersCount = await this.userModel.countDocuments({
-      $or: [
-        { login: new RegExp(mergedQueryParams.searchLoginTerm, 'gi') },
-        { email: new RegExp(mergedQueryParams.searchEmailTerm, 'gi') },
-      ],
-    });
+
+
     //let usersCount = await usersCollection.countDocuments({})
 
-    const users = await this.userModel
-      .find({
-        $or: [
-          { login: new RegExp(mergedQueryParams.searchLoginTerm, 'gi') },
-          { email: new RegExp(mergedQueryParams.searchEmailTerm, 'gi') },
-        ],
-      })
-      .sort({
+const query = {
+  $or: [
+    { login: new RegExp(mergedQueryParams.searchLoginTerm, 'gi') },
+    { email: new RegExp(mergedQueryParams.searchEmailTerm, 'gi') },
+  ],
+};
+
+if (mergedQueryParams.banStatus === 'banned') {
+  query['isBanned'] = true;
+} else if (mergedQueryParams.banStatus === 'notBanned') {
+  query['isBanned'] = false;
+}
+    const usersCount = await this.userModel.countDocuments(query);
+
+
+const users = await this.userModel.find(query)
+.sort({
         [mergedQueryParams.sortBy]: this.sortByDesc(
           mergedQueryParams.sortDirection,
         ),
