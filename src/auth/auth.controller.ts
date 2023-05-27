@@ -56,7 +56,7 @@ export class NewPasswordSetInput {
   @MaxLength(100)
   recoveryCode: string;
 }
-@Throttle(5, 10)
+//@Throttle(5, 10)
 @Controller('auth')
 export class AuthController {
   constructor(
