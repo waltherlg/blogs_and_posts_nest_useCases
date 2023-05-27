@@ -69,6 +69,7 @@ import { UpdatePostByIdFromBloggerControllerUseCase } from './blogs/application/
 import { DeleteBlogByIdFromUriUseCase } from './blogs/application/use-cases/blogger-delete-blog-by-id-use-case';
 import { CreatePostFromBloggerControllerUseCase } from './blogs/application/use-cases/blogger-create-post-from-blogs-controller-use-case';
 import { DeletePostByIdFromUriUseCase } from './blogs/application/use-cases/blogger-delete-post-by-id-use-case';
+import { BanStatusChangeUseCase } from './users/use-cases/ban-status-change-use-case';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -82,7 +83,8 @@ const useCases = [CreateBlogUseCase,
   CreatePostFromBloggerControllerUseCase,
 UpdatePostByIdFromBloggerControllerUseCase,
 DeleteBlogByIdFromUriUseCase,
-DeletePostByIdFromUriUseCase,]
+DeletePostByIdFromUriUseCase,
+BanStatusChangeUseCase,]
 
 @Module({
   imports: [

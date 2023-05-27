@@ -4,6 +4,7 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { Types } from 'mongoose';
 import { endpoints } from './helpers/routing';
+import { userTest } from './helpers/inputAndOutputObjects/usersObjects';
 export function banCheckOperation() {
   describe('Checking User Ban for Get Requests (e2e). ', () => {
     let app: INestApplication;
@@ -57,7 +58,7 @@ export function banCheckOperation() {
           password: 'qwerty',
           email: 'ruslan@gmail-1.com',
         })
-        .expect(204);
+        .expect(201);
         const createdResponse = createResponse.body;
         userId1 = createdResponse.id; 
     });
@@ -86,7 +87,7 @@ export function banCheckOperation() {
           password: 'qwerty',
           email: 'ruslan@gmail-2.com',
         })
-        .expect(204);
+        .expect(201);
         const createdResponse = createResponse.body;
         userId2 = createdResponse.id; 
     });
@@ -115,7 +116,7 @@ export function banCheckOperation() {
           password: 'qwerty',
           email: 'ruslan@gmail-3.com',
         })
-        .expect(204)
+        .expect(201)
         const createdResponse = createResponse.body;
         userId3 = createdResponse.id; ;
     });
@@ -145,7 +146,7 @@ export function banCheckOperation() {
           password: 'qwerty',
           email: 'ruslan@gmail-4.com',
         })
-        .expect(204);
+        .expect(201);
         const createdResponse = createResponse.body;
         userId4 = createdResponse.id; 
     });
@@ -175,7 +176,7 @@ export function banCheckOperation() {
           password: 'qwerty',
           email: 'ruslan@gmail-5.com',
         })
-        .expect(204);
+        .expect(201);
         const createdResponse = createResponse.body;
         userId5 = createdResponse.id; 
     });
@@ -314,7 +315,41 @@ export function banCheckOperation() {
     it('01-08 sa/users/userId/ban PUT = 204 ban user2', async () => {
       await request(app.getHttpServer())
       .put(`${endpoints.saUsers}/${userId2}/ban`)
+      .set('Authorization', `Basic ${basicAuthRight}`)
+      .send(userTest.inputBanUser)
+      .expect(204)
     })
+
+    it('01-05 /posts GET = 200 return all Posts with pagination', async () => {
+      const createResponse = await request(app.getHttpServer())
+        .get(endpoints.posts)
+        .expect(200);
+      const createdResponse = createResponse.body;
+
+      expect(createdResponse).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 1,
+        items: [
+          {
+            id: expect.any(String),
+            title: 'newCreatedPost',
+            shortDescription: 'newPostsShortDescription',
+            content: 'some content',
+            blogId: BlogId1User1,
+            blogName: 'BlogForPosts',
+            createdAt: expect.any(String),
+            extendedLikesInfo: {
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None',
+              newestLikes: [],
+            },
+          },
+        ],
+      });
+    });
 
 
 
