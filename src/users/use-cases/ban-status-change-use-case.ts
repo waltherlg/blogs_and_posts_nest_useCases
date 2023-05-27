@@ -31,11 +31,17 @@ export class BanStatusChangeUseCase implements ICommandHandler<BanStatusChangeCo
                 return
             }
             if(isBanned === true){
+                user.isBanned = true
                 user.banReason = command.banDto.banReason
                 user.banDate = new Date().toISOString()
                 await this.usersDevicesRepository.deleteAllUserDevicesById(userId)
             }
-            user.isBanned = isBanned
+            if(isBanned === false){
+                user.isBanned = false
+                user.banReason = null
+                user.banDate = null
+            }
+            
             const userBanResult = await this.usersRepository.saveUser(user)
 
             const postsBanResult = await this.postsRepository.setBanStatusForPosts(userId, isBanned)

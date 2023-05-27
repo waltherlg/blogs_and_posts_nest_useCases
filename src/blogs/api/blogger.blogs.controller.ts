@@ -98,6 +98,7 @@ export class CreatePostByBlogsIdInputModelType {
 export class BloggerBlogsController {
   constructor(
     private commandBus: CommandBus,
+    private readonly checkService: CheckService,
     private readonly blogsQueryRepository: BlogsQueryRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
@@ -171,6 +172,9 @@ export class BloggerBlogsController {
   async deletePost(@Req() request,
   @Param('blogId') blogId: string,
   @Param('postId') postId: string,){
+    if(!await this.checkService.isBlogExist(blogId)){
+      throw new CustomNotFoundException('blog')
+    }
     const result: BlogActionResult = await this.commandBus.execute(new DeletePostByIdFromUriCommand(request.user.userId, blogId, postId))
     handleBlogOperationResult(result)
   }
