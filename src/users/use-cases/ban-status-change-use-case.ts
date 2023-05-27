@@ -32,6 +32,7 @@ export class BanStatusChangeUseCase implements ICommandHandler<BanStatusChangeCo
             }
             if(isBanned === true){
                 user.banReason = command.banDto.banReason
+                user.banDate = new Date().toISOString()
                 await this.usersDevicesRepository.deleteAllUserDevicesById(userId)
             }
             user.isBanned = isBanned
