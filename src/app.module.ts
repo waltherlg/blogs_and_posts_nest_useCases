@@ -89,10 +89,10 @@ BanStatusChangeUseCase,]
 @Module({
   imports: [
     CqrsModule,
-    ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 10,
-    }),
+    // ThrottlerModule.forRoot({
+    //   ttl: 60,
+    //   limit: 10,
+    // }),
     PassportModule,
     JwtModule.register({
       secret: settings.JWT_SECRET,
