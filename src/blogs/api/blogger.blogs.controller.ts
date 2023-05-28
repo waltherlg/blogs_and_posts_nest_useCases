@@ -21,7 +21,7 @@ import {
   RequestBlogsQueryModel,
   DEFAULT_QUERY_PARAMS,
 } from '../../models/types';
-import { MaxLength } from 'class-validator';
+import { IsBoolean, MaxLength, MinLength } from 'class-validator';
 import { CheckService } from '../../other.services/check.service';
 import { PostsService } from '../../posts/posts.service';
 import { PostsQueryRepository } from '../../posts/posts.query.repository';
@@ -92,6 +92,16 @@ export class CreatePostByBlogsIdInputModelType {
   @StringTrimNotEmpty()
   @MaxLength(1000)
   content: string;
+}
+
+export class BanUserForBlogInputModelType {
+  @IsBoolean()
+  isBanned: boolean;
+  @StringTrimNotEmpty()
+  @MinLength(20)
+  banReason: string;
+  @StringTrimNotEmpty()
+  blogId: string;
 }
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -180,5 +190,11 @@ export class BloggerBlogsController {
     }
     const result: BlogActionResult = await this.commandBus.execute(new DeletePostByIdFromUriCommand(request.user.userId, blogId, postId))
     handleBlogOperationResult(result)
+  }
+
+  @Put('users/:userId/ban')
+  @HttpCode(204)
+  async banUserForBlog(@Req() request, @Param('userId') bannedUserId: string, @Body() banUserDto: BanUserForBlogInputModelType ){
+
   }
 }

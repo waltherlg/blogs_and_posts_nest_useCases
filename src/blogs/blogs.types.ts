@@ -11,7 +11,15 @@ export class BlogDBType {
     public websiteUrl: string,
     public createdAt: string,
     public isMembership: boolean,
+    public bannedUsers: Array<BannedBlogUsersType>,    
   ) {}
+}
+
+export type BannedBlogUsersType = {
+  bannedUserId: string;
+  isBanned: boolean;
+  banDate: string;
+  banReason: string;
 }
 
 export type BlogTypeOutput = {
@@ -44,6 +52,8 @@ export class Blog {
   createdAt: string;
   @Prop()
   isMembership: boolean;
+  @Prop()
+  bannedUsers: Array<BannedBlogUsersType>;
   prepareBlogForOutput() {
     return {
       id: this._id.toString(),

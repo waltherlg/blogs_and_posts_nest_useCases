@@ -30,6 +30,7 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
       command.blogCreateInputModel.websiteUrl,
       new Date().toISOString(),
       false,
+      [],
     );
     const newBlogsId = await this.blogsRepository.createBlog(blogDTO);
     return newBlogsId;
