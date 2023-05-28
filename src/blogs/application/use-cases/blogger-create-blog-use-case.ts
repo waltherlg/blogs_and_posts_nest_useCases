@@ -8,6 +8,7 @@ import {
 } from '../../api/public.blogs.controller';
 import { CommandHandler } from '@nestjs/cqrs/dist';
 import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
+import { UsersRepository } from 'src/users/users.repository';
 
 export class CreateBlogCommand {
   constructor(public userId, public blogCreateInputModel: CreateBlogInputModelType){}
@@ -15,14 +16,16 @@ export class CreateBlogCommand {
 
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
-  constructor(private readonly blogsRepository: BlogsRepository) {}
+  constructor(private readonly blogsRepository: BlogsRepository, private readonly usersRepository: UsersRepository) {}
   async execute(
     command: CreateBlogCommand
   ): Promise<string> {
+    const user = await this.usersRepository.getUserDBTypeById(command.userId)
     const blogDTO = new BlogDBType(
       new Types.ObjectId(),
-      command.userId,
       command.blogCreateInputModel.name,
+      command.userId,
+      user.login,      
       command.blogCreateInputModel.description,
       command.blogCreateInputModel.websiteUrl,
       new Date().toISOString(),

@@ -4,8 +4,9 @@ import mongoose, { HydratedDocument, Types } from 'mongoose';
 export class BlogDBType {
   constructor(
     public _id: Types.ObjectId,
-    public userId: string | null,
     public name: string,
+    public userId: string | null,
+    public userName: string | null,
     public description: string,
     public websiteUrl: string,
     public createdAt: string,
@@ -30,9 +31,11 @@ export class Blog {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId })
   _id: Types.ObjectId;
   @Prop()
-  userId: string | null
-  @Prop()
   name: string;
+  @Prop()
+  userId: string | null;
+  @Prop()
+  userName: string | null;
   @Prop()
   description: string;
   @Prop()
@@ -50,10 +53,27 @@ export class Blog {
       createdAt: this.createdAt,
       isMembership: this.isMembership,
     };
-  }
+    
+}
+prepareBlogForSaOutput() {
+  return {
+    id: this._id.toString(),
+    name: this.name,
+    description: this.description,
+    websiteUrl: this.websiteUrl,
+    createdAt: this.createdAt,
+    isMembership: this.isMembership,
+    blogOwnerInfo: {
+      userId: this.userId,
+      userLogin: this.userName
+    }
+  };
+  
+}
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
 BlogSchema.methods = {
   prepareBlogForOutput: Blog.prototype.prepareBlogForOutput,
+  prepareBlogForSaOutput: Blog.prototype.prepareBlogForSaOutput,
 };

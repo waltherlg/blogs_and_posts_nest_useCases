@@ -34,8 +34,8 @@ export class SaBlogsController {
     handleBlogOperationResult(result)}
 
   @Get()
-  async getAllBlogs(@Query() queryParams: RequestBlogsQueryModel) {
+  async getAllBlogsForSa(@Query() queryParams: RequestBlogsQueryModel) {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
-    return await this.blogsQueryRepository.getAllBlogs(mergedQueryParams);
+    return await this.blogsQueryRepository.getAllBlogsForSa(mergedQueryParams);
   }
 }
