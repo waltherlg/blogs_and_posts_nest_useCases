@@ -163,6 +163,9 @@ export class BloggerBlogsController {
   @Param('blogId') blogId: string, 
   @Param('postId') postId: string,
   @Body() postUpdateDto: UpdatePostByBlogsIdInputModelType){
+    if(!await this.checkService.isBlogExist(blogId)){
+      throw new CustomNotFoundException('blog')
+    }
     const result: BlogActionResult = await this.commandBus.execute(new UpdatePostByIdFromBloggerControllerCommand(request.user.userId, blogId, postId, postUpdateDto))
     handleBlogOperationResult(result)
   }
