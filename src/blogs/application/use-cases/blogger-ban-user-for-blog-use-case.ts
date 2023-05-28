@@ -9,6 +9,7 @@ import { ICommandHandler } from '@nestjs/cqrs/dist/interfaces';
 import { BlogActionResult } from '../../helpers/blogs.enum.action.result';
 import { BanUserForBlogInputModelType } from 'src/blogs/api/blogger.blogs.controller';
 import { Blog } from 'src/blogs/blogs.types';
+import { th } from 'date-fns/locale';
 
 export class BanUserForSpecificBlogCommand {
   constructor(public bloggerId: string, public bannedUserId: string,
@@ -44,7 +45,22 @@ export class BanUserForSpecificBlogUseCase implements ICommandHandler<BanUserFor
         banReason: banReason,
       }
       blog.bannedUsers.push(banUserInfo)
-      blog.markModified('likesCollection');
+      blog.markModified('bannedUsers');
+      const result = await this.blogsRepository.saveBlog(blog)
+      if (result){
+        return BlogActionResult.Success
+      } else {
+        return BlogActionResult.NotSaved
+      }
+    }
+
+    if(banStatus === false){
+      const banedIndex = blog.bannedUsers.findIndex(user => user.bannedUserId === bannedUserId)
+      if (banedIndex === -1) {
+        return BlogActionResult.UserNotBanned
+      }
+      blog.bannedUsers.splice(banedIndex, 1);
+      blog.markModified('bannedUsers');
       const result = await this.blogsRepository.saveBlog(blog)
       if (result){
         return BlogActionResult.Success
