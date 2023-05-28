@@ -28,7 +28,9 @@ export enum BlogActionResult {
       case BlogActionResult.BlogNotFound:
         throw new CustomNotFoundException('blog')
       case BlogActionResult.PostNotFound:
-        throw new CustomNotFoundException('post')  
+        throw new CustomNotFoundException('post') 
+      case BlogActionResult.UserNotFound:
+        throw new CustomNotFoundException('user')  
       case BlogActionResult.UserAlreadyBound:
         throw new CustomisableException('blogId', 'current blog already bound', 400)
       case BlogActionResult.UserNotFound:
