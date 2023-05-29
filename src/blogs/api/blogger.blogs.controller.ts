@@ -45,6 +45,9 @@ import { UpdatePostByIdFromBloggerControllerCommand } from '../application/use-c
 import { DeleteBlogByIdFromUriCommand } from '../application/use-cases/blogger-delete-blog-by-id-use-case';
 import { CreatePostFromBloggerControllerCommand } from '../application/use-cases/blogger-create-post-from-blogs-controller-use-case';
 import { DeletePostByIdFromUriCommand } from '../application/use-cases/blogger-delete-post-by-id-use-case';
+import { BanUserForSpecificBlogCommand } from '../application/use-cases/blogger-ban-user-for-blog-use-case';
+import { CommentsRepository } from 'src/comments/comments.repository';
+import { CommentsQueryRepository } from 'src/comments/comments.query.repository';
 
 export class CreateBlogInputModelType {
   @StringTrimNotEmpty()
@@ -111,6 +114,7 @@ export class BloggerBlogsController {
     private readonly checkService: CheckService,
     private readonly blogsQueryRepository: BlogsQueryRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
+    private readonly commentsQueryRepository: CommentsQueryRepository,
   ) {}
   //ready
   @Put(':id')
@@ -192,9 +196,18 @@ export class BloggerBlogsController {
     handleBlogOperationResult(result)
   }
 
-  @Put('users/:userId/ban')
+  @Put('users/:bannedUserId/ban')
   @HttpCode(204)
-  async banUserForBlog(@Req() request, @Param('userId') bannedUserId: string, @Body() banUserDto: BanUserForBlogInputModelType ){
+  async banUserForBlog(@Req() request, @Param('bannedUserId') bannedUserId: string, @Body() banUserDto: BanUserForBlogInputModelType ){
+    const result = await this.commandBus.execute(new BanUserForSpecificBlogCommand(request.user.userId, bannedUserId, banUserDto))
+    handleBlogOperationResult(result)
+  }
 
+  @Get('blog/comments')
+  @HttpCode(200)
+  async getAllCommentsForBlogger(@Rec() request, @Query() queryParams: RequestQueryParamsModel){
+    const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
+
+    return await this.commentsQueryRepository.getAllCommentsForBlogger(mergedQueryParams, request.user.userId);
   }
 }

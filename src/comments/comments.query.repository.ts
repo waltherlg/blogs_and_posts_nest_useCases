@@ -76,6 +76,11 @@ export class CommentsQueryRepository {
     };
     return outputComments;
   }
+
+  async getAllCommentsForBlogger(qwery, userId){
+
+  }
+  
   sortByDesc(sortDirection: string) {
     return sortDirection === 'desc' ? -1 : 1;
   }
