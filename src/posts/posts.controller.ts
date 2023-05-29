@@ -44,6 +44,9 @@ import {
   LikeStatusValidator,
   StringTrimNotEmpty,
 } from '../middlewares/validators';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateCommentForSpecificPostCommand } from './use-cases/create-comment-for-specific-post-use-case';
+import { handlePostActionResult } from './helpers/post.enum.action.result';
 
 export class CreatePostInputModelType {
   @StringTrimNotEmpty()
@@ -98,6 +101,7 @@ export class PostController {
     private readonly postsRepository: PostsRepository,
     private readonly postsQueryRepository: PostsQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commandBus: CommandBus,
   ) {}
   // @UseGuards(BasicAuthGuard)
   // @Post()
@@ -170,22 +174,12 @@ export class PostController {
     @Param('id') postId: string,
     @Body() content: CreateCommentInputModelType,
   ) {
-    if (!(await this.checkService.isPostExist(postId))) {
-      throw new CustomNotFoundException('post');
-    }
-    const newCommentId = await this.commentService.createComment(
-      postId,
-      content.content,
-      request.user.userId,
-    );
-    const newComment = await this.commentsQueryRepository.getCommentById(
-      newCommentId,
-    );
-    if (!newComment) {
-      throw new UnableException('comment creating');
-    }
-    return newComment;
+    const resultOrCommentId = await this.commandBus.execute(new CreateCommentForSpecificPostCommand(request.user.userId, postId, content.content))
+    handlePostActionResult(resultOrCommentId)
+    const createdComment = await this.commentsQueryRepository.getCommentById(resultOrCommentId)
+    return createdComment
   }
+  
   @UseGuards(OptionalJwtAuthGuard)
   @Get(':id/comments')
   async getAllCommentsByPostId(
