@@ -5,9 +5,13 @@ import { User, UserDocument } from '../users/users.types';
 import { Injectable } from '@nestjs/common';
 import { CommentsLikeType } from '../users/users.types';
 import { CommentDBType } from './comments.types';
+import { Post, PostDocument } from 'src/posts/posts.types';
+import { Blog, BlogDocument } from 'src/blogs/blogs.types';
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
+    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
@@ -34,8 +38,7 @@ export class CommentsQueryRepository {
   }
   async getAllCommentsByPostId(postId: string, mergedQueryParams, userId?) {
     const commentsCount = await this.commentModel.countDocuments({
-      parentType: 'post',
-      parentId: postId,
+      postId: postId,
       isBanned: { $ne: true }
     });
     const sortBy = mergedQueryParams.sortBy;
@@ -45,15 +48,12 @@ export class CommentsQueryRepository {
 
     const comments = await this.commentModel
       .find({
-        parentType: 'post',
-        parentId: postId,
+        postId: postId,
         isBanned: { $ne: true }
       })
       .sort({ [sortBy]: this.sortByDesc(sortDirection) })
       .skip(this.skipPage(pageNumber, pageSize))
       .limit(+pageSize);
-
-    let likedComment: Array<CommentsLikeType> = [];
 
     const outComments = comments.map((comment: CommentDocument) => {
       
@@ -77,7 +77,20 @@ export class CommentsQueryRepository {
     return outputComments;
   }
 
-  async getAllCommentsForBlogger(qwery, userId){
+  async getAllCommentsForBlogger(mergedQueryParams, userId){
+    const sortBy = mergedQueryParams.sortBy;
+    const sortDirection = mergedQueryParams.sortDirection;
+    const pageNumber = mergedQueryParams.pageNumber;
+    const pageSize = mergedQueryParams.pageSize;
+
+    const posts = await this.postModel.find({userId: userId})
+    const postIds = posts.map(post => post._id.toString());
+  
+    const comments = await this.commentModel.find({ postId: { $in: postIds } })
+    .sort({ [sortBy]: this.sortByDesc(sortDirection) })
+    .skip(this.skipPage(pageNumber, pageSize))
+    .limit(+pageSize);;
+    
 
   }
   

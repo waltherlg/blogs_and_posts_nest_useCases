@@ -205,7 +205,7 @@ export class BloggerBlogsController {
 
   @Get('blog/comments')
   @HttpCode(200)
-  async getAllCommentsForBlogger(@Rec() request, @Query() queryParams: RequestQueryParamsModel){
+  async getAllCommentsForBlogger(@Req() request, @Query() queryParams: RequestQueryParamsModel){
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
 
     return await this.commentsQueryRepository.getAllCommentsForBlogger(mergedQueryParams, request.user.userId);

@@ -6,7 +6,7 @@ export class CommentDBType {
   constructor(
     public _id: Types.ObjectId,
     public parentType: string,
-    public parentId: string,
+    public postId: string,
     public content: string,
     public userId: string,
     public userLogin: string,
@@ -47,7 +47,7 @@ export class Comment {
   parentType: string;
   @Prop({ required: true })
   @IsNotEmpty()
-  parentId: string;
+  postId: string;
   @Prop({ required: true })
   @IsNotEmpty()
   content: string;
