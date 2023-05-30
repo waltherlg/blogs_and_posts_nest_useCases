@@ -151,11 +151,6 @@ export class BlogsQueryRepository {
   
     return outputBlogs;
   }
-
-  async getBannedUsersForCurrentBlog(userId: string, blogId: string, mergedQueryParams: RequestBannedUsersQueryModel){
-    const blog = await this.blogModel.findById(blogId)
-    
-  }
   
   private sortByDesc(sortDirection: string) {
     return sortDirection === 'desc' ? -1 : 1;
