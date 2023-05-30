@@ -104,6 +104,9 @@ export class Comment {
       },
     };
   }
+  prepareCommentForBlogger(){
+    
+  }
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

@@ -84,12 +84,45 @@ export class CommentsQueryRepository {
     const pageSize = mergedQueryParams.pageSize;
 
     const posts = await this.postModel.find({userId: userId})
+
     const postIds = posts.map(post => post._id.toString());
-  
+
+    const commentsCount = await this.commentModel.countDocuments({ postId: { $in: postIds } })
     const comments = await this.commentModel.find({ postId: { $in: postIds } })
     .sort({ [sortBy]: this.sortByDesc(sortDirection) })
     .skip(this.skipPage(pageNumber, pageSize))
-    .limit(+pageSize);;
+    .limit(+pageSize);
+
+    const commentsForOutput = comments.map((comment: CommentDocument) => {
+        const currentPostIndex = posts.findIndex(post => post._id.toString() === comment.postId)
+        const currentPost = posts[currentPostIndex]
+ 
+      return {
+        id: comment._id.toString(),
+        content: comment.content,
+        commentatorInfo: {
+          userId: comment.userId,
+          userLogin: comment.userLogin,
+        },
+        createdAt: comment.createdAt,
+        postInfo: {
+          id: comment.postId,
+          title: currentPost.title,
+          blogId: currentPost.blogId,
+          blogName: currentPost.blogName
+        }
+      };
+    })
+    const pageCount = Math.ceil(commentsCount / +pageSize);
+
+    const outputComments = {
+      pagesCount: pageCount,
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: commentsCount,
+      items: commentsForOutput,
+    };
+    return outputComments;
     
 
   }
