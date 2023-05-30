@@ -196,14 +196,7 @@ export class BloggerBlogsController {
     handleBlogOperationResult(result)
   }
 
-  @Put('users/:bannedUserId/ban')
-  @HttpCode(204)
-  async banUserForBlog(@Req() request, @Param('bannedUserId') bannedUserId: string, @Body() banUserDto: BanUserForBlogInputModelType ){
-    const result = await this.commandBus.execute(new BanUserForSpecificBlogCommand(request.user.userId, bannedUserId, banUserDto))
-    handleBlogOperationResult(result)
-  }
-
-  @Get('blog/comments')
+  @Get('/comments')
   @HttpCode(200)
   async getAllCommentsForBlogger(@Req() request, @Query() queryParams: RequestQueryParamsModel){
     const mergedQueryParams = { ...DEFAULT_QUERY_PARAMS, ...queryParams };
