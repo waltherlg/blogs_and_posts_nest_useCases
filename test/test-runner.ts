@@ -5,10 +5,12 @@ import { testBloggerCrud } from './07-blogger.blogs.controller';
 import { testPostLikesCrud } from './08-post-likes.operation.e2e-spec';
 import { testCommentLikesCrud } from './09-comments-likes.operation.e2e-spec';
 import { banCheckOperation } from './10-ban.check.operation.e2e-spec';
+import { bloggerUsersControllers } from './11-blogger.usrers.controller.e2e-spec';
 
 describe('End-to-End Tests', () => {
   //testBloggerCrud()
   //testPostLikesCrud()
   //testCommentLikesCrud()
-  banCheckOperation()
+  //banCheckOperation()
+  bloggerUsersControllers()
 });

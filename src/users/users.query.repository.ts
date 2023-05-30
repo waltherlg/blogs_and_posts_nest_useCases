@@ -75,6 +75,7 @@ const users = await this.userModel.find(query)
     const aggregationPipeline: PipelineStage[] = [
       { $match: { _id: blogId } }, // Фильтруем только нужный блог
       { $unwind: "$bannedUsers" }, // Развертываем массив bannedUsers
+      { $match: { "bannedUsers.bannedLogin": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } }, // Фильтруем по searchLoginTerm
       { $sort: { [mergedQueryParams.sortBy]: this.sortByDesc(mergedQueryParams.sortDirection) } }, // Сортируем результаты
       { $skip: this.skipPage(mergedQueryParams.pageNumber, mergedQueryParams.pageSize) }, // Пропускаем результаты
       { $limit: +mergedQueryParams.pageSize }, // Ограничиваем количество результатов
@@ -83,7 +84,8 @@ const users = await this.userModel.find(query)
     
     const [result] = await this.blogModel.aggregate(aggregationPipeline);
     const users = result ? result.bannedUsers : [];
-    const usersCount = users.length;  
+    const usersCount = users.length;
+    return users  
   }
 
   sortByDesc(sortDirection: string) {

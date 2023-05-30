@@ -7,6 +7,7 @@ import { handleBlogOperationResult } from "src/blogs/helpers/blogs.enum.action.r
 import { BlogsQueryRepository } from "src/blogs/infrostracture/blogs.query.repository"
 import { BlogsRepository } from "src/blogs/infrostracture/blogs.repository"
 import { RequestBannedUsersQueryModel, DEFAULT_BANNED_USERS_QUERY_PARAMS } from "src/models/types"
+import { UsersQueryRepository } from "./users.query.repository"
 
 
 @UseGuards(JwtAuthGuard)
@@ -14,7 +15,7 @@ import { RequestBannedUsersQueryModel, DEFAULT_BANNED_USERS_QUERY_PARAMS } from 
 export class BloggerUsersController {
   constructor(
     private commandBus: CommandBus,
-    private readonly blogsQueryRepository: BlogsQueryRepository,
+    private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @Put(':bannedUserId/ban')
@@ -28,6 +29,6 @@ export class BloggerUsersController {
   @HttpCode(200)
   async getBannedUsersForCurrentBlog(@Req() request, @Param('blogId') blogId: string, @Query() queryParams: RequestBannedUsersQueryModel){
     const mergedQueryParams = { ...DEFAULT_BANNED_USERS_QUERY_PARAMS, ...queryParams }
-    return await this.blogsQueryRepository.getBannedUsersForCurrentBlog(request.user.userId, blogId, mergedQueryParams)
+    return await this.usersQueryRepository.getBannedUsersForCurrentBlog(request.user.userId, blogId, mergedQueryParams)
   }
 }

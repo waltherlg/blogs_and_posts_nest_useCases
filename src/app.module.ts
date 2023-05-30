@@ -72,6 +72,7 @@ import { DeletePostByIdFromUriUseCase } from './blogs/application/use-cases/blog
 import { BanStatusChangeUseCase } from './users/use-cases/ban-status-change-use-case';
 import { BanUserForSpecificBlogUseCase } from './blogs/application/use-cases/blogger-ban-user-for-blog-use-case';
 import { BloggerUsersController } from './users/blogger.users.controller';
+import { CreateCommentForSpecificPostUseCase } from './posts/use-cases/create-comment-for-specific-post-use-case';
 const mongoUri = process.env.MONGO_URL;
 const emailUser = process.env.MAIL_USER;
 const emailPassword = process.env.MAIL_PASSWORD;
@@ -86,6 +87,7 @@ const useCases = [CreateBlogUseCase,
 UpdatePostByIdFromBloggerControllerUseCase,
 DeleteBlogByIdFromUriUseCase,
 DeletePostByIdFromUriUseCase,
+CreateCommentForSpecificPostUseCase,
 BanStatusChangeUseCase,
 BanUserForSpecificBlogUseCase,]
 
