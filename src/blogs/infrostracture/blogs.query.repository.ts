@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDBType, BlogDocument, BlogTypeOutput } from '../blogs.types';
 import { HydratedDocument, Model, Types } from 'mongoose';
-import { PaginationOutputModel } from '../../models/types';
+import { PaginationOutputModel, RequestBannedUsersQueryModel } from '../../models/types';
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -150,6 +150,11 @@ export class BlogsQueryRepository {
     };
   
     return outputBlogs;
+  }
+
+  async getBannedUsersForCurrentBlog(userId: string, blogId: string, mergedQueryParams: RequestBannedUsersQueryModel){
+    const blog = await this.blogModel.findById(blogId)
+    
   }
   
   private sortByDesc(sortDirection: string) {

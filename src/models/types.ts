@@ -24,6 +24,17 @@ export const DEFAULT_BLOGS_QUERY_PARAMS: RequestBlogsQueryModel = {
   pageSize: '10',
 };
 
+export type RequestBannedUsersQueryModel = RequestQueryParamsModel & {
+  searchLoginTerm: string;
+}
+export const DEFAULT_BANNED_USERS_QUERY_PARAMS: RequestBannedUsersQueryModel = {
+  sortBy: 'createdAt',
+  sortDirection: 'desc',
+  pageNumber: '1',
+  pageSize: '10',
+  searchLoginTerm: ''
+};
+
 export type RequestUsersQueryModel = RequestQueryParamsModel & {
   
   searchLoginTerm: string;
