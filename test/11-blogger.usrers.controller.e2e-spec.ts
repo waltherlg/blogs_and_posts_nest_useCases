@@ -6,6 +6,7 @@ import { Types } from 'mongoose';
 import { endpoints } from './helpers/routing';
 import { userTest } from './helpers/inputAndOutputObjects/usersObjects';
 import { blog1 } from './helpers/inputAndOutputObjects/blogsObjects';
+import { error } from 'console';
 export function bloggerUsersControllers() {
   describe('blogger.user.controller (e2e). ', () => {
     let app: INestApplication;
@@ -209,10 +210,13 @@ export function bloggerUsersControllers() {
         .expect(201);
 
       const createdResponseOfFirstBlog = testsResponse.body;
+      console.log(createdResponseOfFirstBlog);
+      
       BlogId1User1 = createdResponseOfFirstBlog.id;
+      console.log('BlogId1User1 ', BlogId1User1);
 
       expect(createdResponseOfFirstBlog).toEqual({
-        id: BlogId1User1,
+        id: expect.any(String),
         name: 'BlogForPosts',
         description: 'description BlogForPosts',
         websiteUrl: 'https://www.someweb.com',
@@ -220,6 +224,8 @@ export function bloggerUsersControllers() {
         isMembership: false,
       });
     });
+
+    console.log('BlogId1User1 before create post ', BlogId1User1);
 
     it('01-02 blogger/blogId/posts POST = 201 user1 create new post', async () => {
       const testsResponse = await request(app.getHttpServer())
@@ -232,6 +238,7 @@ export function bloggerUsersControllers() {
           content: 'some content',
         })
         .expect(201);
+        console.log('BlogId1User1 after create post ', BlogId1User1);
 
       const createdResponse = testsResponse.body;
       PostId1User1 = createdResponse.id;
@@ -253,21 +260,23 @@ export function bloggerUsersControllers() {
       });
     });
 
+    console.log('BlogId1User1 before ban ', BlogId1User1);
+
     it('01-02 blogger/users/userId/ban PUT = 204 user2 banned for blog1', async () => {
-      const testsResponse = await request(app.getHttpServer())
-        .post(`${endpoints.bloggerUsers}/${userId2}/ban`)
+         let testResp1 = await request(app.getHttpServer())
+        .put(`${endpoints.bloggerUsers}/${userId2}/ban`)
         .set('Authorization', `Bearer ${accessTokenUser1}`)
         .send({
           isBanned: true,
           banReason: "banReasonbanReasonbanReasonbanReason",
           blogId: BlogId1User1
         })
-        .expect(204);
+        .expect(204)            
     })
-
+    
     it('01-02 blogger/users/userId/ban PUT = 204 user3 banned for blog1', async () => {
       const testsResponse = await request(app.getHttpServer())
-        .post(`${endpoints.bloggerUsers}/${userId3}/ban`)
+        .put(`${endpoints.bloggerUsers}/${userId3}/ban`)
         .set('Authorization', `Bearer ${accessTokenUser1}`)
         .send({
           isBanned: true,
@@ -277,7 +286,7 @@ export function bloggerUsersControllers() {
         .expect(204);
     })
 
-    it('01-02 posts/postId/comments POST = 403 user2 create new comment', async () => {
+    it('01-02 posts/postId/comments POST = 403 banned user2 should\,t create comment', async () => {
       const testsResponse = await request(app.getHttpServer())
         .post(`${endpoints.posts}/${PostId1User1}/comments`)
         .set('Authorization', `Bearer ${accessTokenUser2}`)
@@ -285,6 +294,13 @@ export function bloggerUsersControllers() {
           content: 'some comment for post1',
         })
         .expect(403);
+    });
+
+    it('01-02 blogger/users/blog/blogId GET = 403 user2 create new comment', async () => {
+      const testsResponse = await request(app.getHttpServer())
+        .get(`${endpoints.bloggerUsers}/blog/${BlogId1User1}`)
+        .set('Authorization', `Bearer ${accessTokenUser1}`)
+        .expect(200);
     });
 
 

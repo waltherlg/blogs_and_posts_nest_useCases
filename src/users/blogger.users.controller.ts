@@ -8,6 +8,8 @@ import { BlogsQueryRepository } from "src/blogs/infrostracture/blogs.query.repos
 import { BlogsRepository } from "src/blogs/infrostracture/blogs.repository"
 import { RequestBannedUsersQueryModel, DEFAULT_BANNED_USERS_QUERY_PARAMS } from "src/models/types"
 import { UsersQueryRepository } from "./users.query.repository"
+import { CheckService } from "src/other.services/check.service"
+import { CustomNotFoundException } from "src/exceptions/custom.exceptions"
 
 
 @UseGuards(JwtAuthGuard)
@@ -15,6 +17,7 @@ import { UsersQueryRepository } from "./users.query.repository"
 export class BloggerUsersController {
   constructor(
     private commandBus: CommandBus,
+    private readonly checkService: CheckService,
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
 
@@ -28,6 +31,9 @@ export class BloggerUsersController {
   @Get('blog/:blogId')
   @HttpCode(200)
   async getBannedUsersForCurrentBlog(@Req() request, @Param('blogId') blogId: string, @Query() queryParams: RequestBannedUsersQueryModel){
+    if(!await this.checkService.isBlogExist(blogId)){
+      throw new CustomNotFoundException('blog')
+    }
     const mergedQueryParams = { ...DEFAULT_BANNED_USERS_QUERY_PARAMS, ...queryParams }
     return await this.usersQueryRepository.getBannedUsersForCurrentBlog(request.user.userId, blogId, mergedQueryParams)
   }

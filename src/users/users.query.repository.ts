@@ -71,9 +71,8 @@ const users = await this.userModel.find(query)
   }
 
   async getBannedUsersForCurrentBlog(userId: string, blogId: string, mergedQueryParams: RequestBannedUsersQueryModel){
-    const blog = await this.blogModel.findById(blogId)
     const aggregationPipeline: PipelineStage[] = [
-      { $match: { _id: blogId } }, // Фильтруем только нужный блог
+      { $match: { _id: new Types.ObjectId(blogId)} }, // Фильтруем только нужный блог
       { $unwind: "$bannedUsers" }, // Развертываем массив bannedUsers
       { $match: { "bannedUsers.bannedLogin": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } }, // Фильтруем по searchLoginTerm
       { $sort: { [mergedQueryParams.sortBy]: this.sortByDesc(mergedQueryParams.sortDirection) } }, // Сортируем результаты
@@ -85,7 +84,28 @@ const users = await this.userModel.find(query)
     const [result] = await this.blogModel.aggregate(aggregationPipeline);
     const users = result ? result.bannedUsers : [];
     const usersCount = users.length;
-    return users  
+  
+    const outUsers = users.map((user) => {
+      return {
+        id: user.bannedUserId,
+        login: user.bannedLogin,
+        banInfo: {
+          isBanned: user.isBanned,
+          banDate: user.banDate,
+          banReason: user.banReason,
+        }
+      }
+    });
+    const pageCount = Math.ceil(usersCount / +mergedQueryParams.pageSize);
+  
+    const outputUsers: PaginationOutputModel<UserTypeOutput> = {
+      pagesCount: pageCount,
+      page: +mergedQueryParams.pageNumber,
+      pageSize: +mergedQueryParams.pageSize,
+      totalCount: usersCount,
+      items: outUsers,
+    };
+    return outputUsers;
   }
 
   sortByDesc(sortDirection: string) {
