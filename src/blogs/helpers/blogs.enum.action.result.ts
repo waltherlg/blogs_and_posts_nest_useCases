@@ -6,6 +6,7 @@ export enum BlogActionResult {
     UserNotFound = 'USER_NOT_FOUND',
     PostNotFound = 'POST_NOT_FOUND',
     NotOwner = 'CURRENT_USER_IS_NOT_OWNER',
+    NoChangeNeeded = 'NO_CHANGE_NEEDED',
     UserAlreadyBound = 'USER_ALREADY_BOUND',
     UserAlreadyBanned = 'USER_ALREADY_BANNED',
     UserNotBanned = 'USER_NOT_BANNED',
@@ -24,6 +25,8 @@ export enum BlogActionResult {
       case BlogActionResult.UserAlreadyBanned:
         break;
       case BlogActionResult.UserNotBanned:
+        break;
+      case BlogActionResult.NoChangeNeeded:
         break;
       case BlogActionResult.BlogNotFound:
         throw new CustomNotFoundException('blog')

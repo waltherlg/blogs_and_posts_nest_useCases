@@ -3,10 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { HydratedDocument, Model, Types } from 'mongoose';
 import { PaginationOutputModel } from '../models/types';
 import { PostDocument, PostTypeOutput, Post } from './posts.types';
+import { BlogDocument, Blog } from 'src/blogs/blogs.types';
 
 @Injectable()
 export class PostsQueryRepository {
-  constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
+  constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>,
+  @InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
 
   async getPostById(postId, userId?): Promise<PostTypeOutput | null> {
     if (!Types.ObjectId.isValid(postId)) {
@@ -15,6 +17,10 @@ export class PostsQueryRepository {
     const post: PostDocument = await this.postModel.findById(postId);
     if (!post || post.isBanned === true) {
       return null;
+    }
+    const blog = await this.blogModel.findById(new Types.ObjectId(post.blogId))
+    if(!blog || blog.isBlogBanned === true){
+      return null
     }
     const userPostStatus = post.likesCollection.find(
       (p) => p.userId === userId,

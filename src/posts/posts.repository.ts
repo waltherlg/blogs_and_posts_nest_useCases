@@ -51,6 +51,11 @@ export class PostsRepository {
   return !!banLikesPostResult
  }
 
+ async setBlogBanStatusForPostDocument(blogId, blogBanStatus): Promise<boolean>{
+  const result = await this.postModel.updateMany({blogId: blogId}, {$set: {isBlogBanned: blogBanStatus}})
+  return !!result
+ }
+
   async deleteAllPosts() {
     await this.postModel.deleteMany({});
   }

@@ -29,6 +29,7 @@ export class PostsService {
       false,
       postCreateInputModel.blogId,
       blog.name,
+      false,
       new Date().toISOString(),
       0,
       0,

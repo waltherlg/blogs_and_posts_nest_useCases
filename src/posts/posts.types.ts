@@ -11,6 +11,7 @@ export class PostDBType {
     public isBanned: boolean,
     public blogId: string,
     public blogName: string,
+    public isBlogBanned: boolean,
     public createdAt: string,
     public likesCount: number,
     public dislikesCount: number,
@@ -39,6 +40,8 @@ export class Post {
   blogId: string;
   @Prop()
   blogName: string;
+  @Prop()
+  isBlogBanned: boolean;
   @Prop()
   createdAt: string;
   @Prop()

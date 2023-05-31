@@ -12,6 +12,7 @@ import { BannedBlogUsersType, Blog } from 'src/blogs/blogs.types';
 import { th } from 'date-fns/locale';
 import { UsersRepository } from 'src/users/users.repository';
 import { BanBlogInputModelType } from 'src/blogs/api/sa.blogs.controller';
+import { PostsRepository } from 'src/posts/posts.repository';
 
 export class SaBanBlogCommand {
   constructor(public blogId: string, public banBlogDto: BanBlogInputModelType){}
@@ -19,17 +20,25 @@ export class SaBanBlogCommand {
 
 @CommandHandler(SaBanBlogCommand)
 export class SaBanBlogUseCase implements ICommandHandler<SaBanBlogCommand> {
-  constructor(private readonly blogsRepository: BlogsRepository, private readonly usersRepository: UsersRepository,) {}
+  constructor(private readonly blogsRepository: BlogsRepository, private readonly postsRepository: PostsRepository,) {}
 
   async execute(
     command: SaBanBlogCommand,
   ): Promise<BlogActionResult> {
+    const blogId = command.blogId
+    const newBanStatus = command.banBlogDto.isBanned
 
-    const blog = await this.blogsRepository.getBlogDBTypeById(command.blogId);
+    const blog = await this.blogsRepository.getBlogDBTypeById(blogId);
     if(!blog) return BlogActionResult.BlogNotFound
-    blog.isBlogBanned = command.banBlogDto.isBanned
-    const result = await this.blogsRepository.saveBlog(blog)
-    if(result){
+    if(blog.isBlogBanned === newBanStatus){
+      return BlogActionResult.NoChangeNeeded
+    }
+    blog.isBlogBanned = newBanStatus
+    const isBlogSave = await this.blogsRepository.saveBlog(blog)
+    const isPostsUpdated = await this.postsRepository.setBlogBanStatusForPostDocument(blogId, newBanStatus)
+
+
+    if(isBlogSave && isPostsUpdated){
       return BlogActionResult.Success
     } else {
       return BlogActionResult.NotSaved
