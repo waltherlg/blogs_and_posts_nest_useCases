@@ -1,10 +1,12 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   Param,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { BlogsQueryRepository } from '../infrostracture/blogs.query.repository';
@@ -18,6 +20,13 @@ import { BasicAuthGuard } from '../../auth/guards/auth.guards';
 import { CommandBus } from '@nestjs/cqrs';
 import { BindBlogWithUserCommand } from '../application/use-cases/sa-bind-blog-with-user-use-case';
 import { BlogActionResult, handleBlogOperationResult } from '../helpers/blogs.enum.action.result';
+import { IsBoolean } from 'class-validator';
+import { SaBanBlogCommand } from '../application/use-cases/sa-ban-blog-use-case';
+
+export class BanBlogInputModelType {
+  @IsBoolean()
+  isBanned: boolean;
+}
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/blogs')
@@ -37,5 +46,12 @@ export class SaBlogsController {
   async getAllBlogsForSa(@Query() queryParams: RequestBlogsQueryModel) {
     const mergedQueryParams = { ...DEFAULT_BLOGS_QUERY_PARAMS, ...queryParams };
     return await this.blogsQueryRepository.getAllBlogsForSa(mergedQueryParams);
+  }
+
+  @Put(':blogId/ban')
+  @HttpCode(204)
+  async banBlog(@Param('blogId') blogId: string, @Body() banBlogDto: BanBlogInputModelType){
+    const result = await this.commandBus.execute(new SaBanBlogCommand(blogId, banBlogDto))
+    handleBlogOperationResult(result)
   }
 }

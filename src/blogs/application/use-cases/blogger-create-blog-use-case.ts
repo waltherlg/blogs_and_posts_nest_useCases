@@ -24,6 +24,7 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
     const blogDTO = new BlogDBType(
       new Types.ObjectId(),
       command.blogCreateInputModel.name,
+      false,
       command.userId,
       user.login,      
       command.blogCreateInputModel.description,

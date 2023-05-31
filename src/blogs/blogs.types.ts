@@ -5,6 +5,7 @@ export class BlogDBType {
   constructor(
     public _id: Types.ObjectId,
     public name: string,
+    public isBlogBanned: boolean,
     public userId: string | null,
     public userName: string | null,
     public description: string,
@@ -41,6 +42,8 @@ export class Blog {
   _id: Types.ObjectId;
   @Prop()
   name: string;
+  @Prop()
+  isBlogBanned: boolean;
   @Prop()
   userId: string | null;
   @Prop()
