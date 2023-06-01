@@ -38,6 +38,7 @@ export class CreatePostFromBloggerControllerUseCase implements ICommandHandler<C
       false,
       command.blogId,
       blog.name,
+      false,
       new Date().toISOString(),
       0,
       0,

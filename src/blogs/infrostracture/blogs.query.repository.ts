@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDBType, BlogDocument, BlogTypeOutput } from '../blogs.types';
+import { Blog, BlogDBType, BlogDocument, BlogTypeOutput, blogSaTypeOutput } from '../blogs.types';
 import { HydratedDocument, Model, Types } from 'mongoose';
 import { PaginationOutputModel, RequestBannedUsersQueryModel } from '../../models/types';
 
@@ -71,14 +71,14 @@ export class BlogsQueryRepository {
   }
 
   
-  async getAllBlogsForSa(mergedQueryParams) {
+  async getAllBlogsForSa(mergedQueryParams): Promise<PaginationOutputModel<blogSaTypeOutput>> {
     const blogsCount = await this.blogModel.countDocuments({
       name: new RegExp(mergedQueryParams.searchNameTerm, 'gi'),
-    }, { isBlogBanned: false} );
+    });
     let blogs;
     if (mergedQueryParams.searchNameTerm !== '') {
       blogs = await this.blogModel
-        .find({ name: new RegExp(mergedQueryParams.searchNameTerm, 'gi') }, { isBlogBanned: false})
+        .find({ name: new RegExp(mergedQueryParams.searchNameTerm, 'gi') } )
         .skip(
           this.skipPage(
             mergedQueryParams.pageNumber,
@@ -107,12 +107,12 @@ export class BlogsQueryRepository {
           ),
         });
     }
-    const blogsOutput = blogs.map((blog: BlogDocument) => {
+    const blogsOutput: Array<blogSaTypeOutput> = blogs.map((blog: BlogDocument) => {
       return blog.prepareBlogForSaOutput();
     });
     const pageCount = Math.ceil(blogsCount / +mergedQueryParams.pageSize);
 
-    const outputBlogs: PaginationOutputModel<BlogTypeOutput> = {
+    const outputBlogs: PaginationOutputModel<blogSaTypeOutput> = {
       pagesCount: pageCount,
       page: +mergedQueryParams.pageNumber,
       pageSize: +mergedQueryParams.pageSize,

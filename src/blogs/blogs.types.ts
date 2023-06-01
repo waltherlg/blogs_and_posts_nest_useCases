@@ -34,6 +34,26 @@ export type BlogTypeOutput = {
   isMembership: boolean;
 };
 
+export type blogSaTypeOutput = {
+  id: string;
+  name: string;
+  description: string;
+  websiteUrl: string;
+  createdAt: string;
+  isMembership: boolean;
+  blogOwnerInfo: blogOwnerInfoType;
+  banInfo: blogBanInfoType;
+};
+
+type blogOwnerInfoType = {
+  userId: string,
+  userLogin: string,
+};
+type blogBanInfoType = {
+  isBanned: string,
+  banDate: string,
+}
+
 export type BlogDocument = HydratedDocument<Blog>;
 
 
