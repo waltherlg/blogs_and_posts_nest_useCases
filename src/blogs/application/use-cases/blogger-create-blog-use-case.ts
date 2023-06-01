@@ -25,6 +25,7 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
       new Types.ObjectId(),
       command.blogCreateInputModel.name,
       false,
+      null,
       command.userId,
       user.login,      
       command.blogCreateInputModel.description,

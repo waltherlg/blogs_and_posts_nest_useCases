@@ -6,6 +6,7 @@ export class BlogDBType {
     public _id: Types.ObjectId,
     public name: string,
     public isBlogBanned: boolean,
+    public blogBanDate: string | null,
     public userId: string | null,
     public userName: string | null,
     public description: string,
@@ -45,6 +46,8 @@ export class Blog {
   @Prop()
   isBlogBanned: boolean;
   @Prop()
+  blogBanDate: string | null;
+  @Prop()
   userId: string | null;
   @Prop()
   userName: string | null;
@@ -79,7 +82,11 @@ prepareBlogForSaOutput() {
     isMembership: this.isMembership,
     blogOwnerInfo: {
       userId: this.userId,
-      userLogin: this.userName
+      userLogin: this.userName,
+    },
+    banInfo: {
+      isBanned: this.isBlogBanned,
+      banDate: this.blogBanDate,
     }
   };
   
