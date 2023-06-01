@@ -35,7 +35,7 @@ async execute(command: CreateCommentForSpecificPostCommand)
     if(!blog){
       return PostActionResult.BlogNotFound
     }
-    const isUserBannedForBlog = blog.bannedUsers.some(user => user.bannedUserId === userId)
+    const isUserBannedForBlog = blog.bannedUsers.some(user => user.id === userId)
     if (isUserBannedForBlog) {
       return PostActionResult.UserBannedForBlog
     }
