@@ -70,26 +70,28 @@ const users = await this.userModel.find(query)
     return outputUsers;
   }
 
-  async getBannedUsersForCurrentBlog(userId: string, blogId: string, mergedQueryParams: RequestBannedUsersQueryModel){
+  async getBannedUsersForCurrentBlog(userId: string, blogId: string, mergedQueryParams: RequestBannedUsersQueryModel) {
+    const sortByField = `bannedUsers.${mergedQueryParams.sortBy}`;
+  
     const aggregationPipeline: PipelineStage[] = [
-      { $match: { _id: new Types.ObjectId(blogId) } }, // Фильтруем только нужный блог
-      { $project: { _id: 0, bannedUsers: 1 } }, // Проецируем только поле bannedUsers
-      { $unwind: "$bannedUsers" }, // Развертываем массив bannedUsers
-      { $match: { "bannedUsers.login": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } }, // Фильтруем по searchLoginTerm
-      { $sort: { [mergedQueryParams.sortBy]: this.sortByDesc(mergedQueryParams.sortDirection) } }, // Сортируем результаты
-      { $skip: this.skipPage(mergedQueryParams.pageNumber, mergedQueryParams.pageSize) }, // Пропускаем результаты
-      { $limit: +mergedQueryParams.pageSize }, // Ограничиваем количество результатов
+      { $match: { _id: new Types.ObjectId(blogId) } },
+      { $project: { _id: 0, bannedUsers: 1 } },
+      { $unwind: "$bannedUsers" },
+      { $match: { "bannedUsers.login": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } },
+      { $sort: { [sortByField]: this.sortByDesc(mergedQueryParams.sortDirection) } },
+      { $skip: this.skipPage(mergedQueryParams.pageNumber, mergedQueryParams.pageSize) },
+      { $limit: +mergedQueryParams.pageSize },
       {
         $group: {
           _id: null,
           bannedUsers: { $push: "$bannedUsers" }
         }
-      }, // Группируем результаты
+      },
     ];
   
     const [result] = await this.blogModel.aggregate(aggregationPipeline);
     const users = result ? result.bannedUsers : [];
-
+  
     const usersCountPipeline: PipelineStage[] = [
       { $match: { _id: new Types.ObjectId(blogId) } },
       { $unwind: "$bannedUsers" },
