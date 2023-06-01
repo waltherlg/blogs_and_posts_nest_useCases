@@ -15,12 +15,8 @@ export class PostsQueryRepository {
       return null;
     }
     const post: PostDocument = await this.postModel.findById(postId);
-    if (!post || post.isBanned === true) {
+    if (!post || post.isBanned === true || post.isBlogBanned === true) {
       return null;
-    }
-    const blog = await this.blogModel.findById(new Types.ObjectId(post.blogId))
-    if(!blog || blog.isBlogBanned === true){
-      return null
     }
     const userPostStatus = post.likesCollection.find(
       (p) => p.userId === userId,
@@ -32,9 +28,9 @@ export class PostsQueryRepository {
   }
 
   async getAllPosts(mergedQueryParams, userId?) {
-    const postCount = await this.postModel.countDocuments({ isBanned: false });
+    const postCount = await this.postModel.countDocuments({ isBanned: false, isBlogBanned: false });
     const posts = await this.postModel
-      .find({ isBanned: false })
+      .find({ isBanned: false, isBlogBanned: false })
       .skip(
         this.skipPage(mergedQueryParams.pageNumber, mergedQueryParams.pageSize),
       )
@@ -71,9 +67,9 @@ export class PostsQueryRepository {
     blogId,
     userId?,
   ): Promise<PaginationOutputModel<PostTypeOutput>> {
-    const postCount = await this.postModel.countDocuments({ blogId: blogId, isBanned: { $ne: true } });
+    const postCount = await this.postModel.countDocuments({ blogId: blogId, isBanned: false, isBlogBanned: false });
     const posts = await this.postModel
-      .find({ blogId: blogId, isBanned: { $ne: true } })
+      .find({ blogId: blogId, isBanned: false, isBlogBanned: false })
       .skip(
         this.skipPage(mergedQueryParams.pageNumber, mergedQueryParams.pageSize),
       )
