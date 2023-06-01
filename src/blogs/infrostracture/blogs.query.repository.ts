@@ -13,7 +13,7 @@ export class BlogsQueryRepository {
       return null;
     }
     const blog: BlogDocument = await this.blogModel.findById(blogId);
-    if (!blog) {
+    if (!blog || blog.isBlogBanned === true) {
       return null;
     }
     return blog.prepareBlogForOutput();
@@ -22,11 +22,11 @@ export class BlogsQueryRepository {
   async getAllBlogs(mergedQueryParams) {
     const blogsCount = await this.blogModel.countDocuments({
       name: new RegExp(mergedQueryParams.searchNameTerm, 'gi'),
-    });
+    }, { isBlogBanned: false});
     let blogs;
     if (mergedQueryParams.searchNameTerm !== '') {
       blogs = await this.blogModel
-        .find({ name: new RegExp(mergedQueryParams.searchNameTerm, 'gi') })
+        .find({ name: new RegExp(mergedQueryParams.searchNameTerm, 'gi') }, { isBlogBanned: false})
         .skip(
           this.skipPage(
             mergedQueryParams.pageNumber,
@@ -41,7 +41,7 @@ export class BlogsQueryRepository {
         });
     } else {
       blogs = await this.blogModel
-        .find({})
+        .find({ isBlogBanned: false})
         .skip(
           this.skipPage(
             mergedQueryParams.pageNumber,
@@ -74,11 +74,11 @@ export class BlogsQueryRepository {
   async getAllBlogsForSa(mergedQueryParams) {
     const blogsCount = await this.blogModel.countDocuments({
       name: new RegExp(mergedQueryParams.searchNameTerm, 'gi'),
-    });
+    }, { isBlogBanned: false} );
     let blogs;
     if (mergedQueryParams.searchNameTerm !== '') {
       blogs = await this.blogModel
-        .find({ name: new RegExp(mergedQueryParams.searchNameTerm, 'gi') })
+        .find({ name: new RegExp(mergedQueryParams.searchNameTerm, 'gi') }, { isBlogBanned: false})
         .skip(
           this.skipPage(
             mergedQueryParams.pageNumber,
@@ -126,6 +126,7 @@ export class BlogsQueryRepository {
     const { searchNameTerm, pageNumber, pageSize, sortBy, sortDirection } = mergedQueryParams;
     const searchQuery = {
       userId: userId,
+      isBlogBanned: false,
       ...(searchNameTerm !== '' ? { name: new RegExp(searchNameTerm, 'gi') } : {})
     };
   
