@@ -72,15 +72,21 @@ const users = await this.userModel.find(query)
 
   async getBannedUsersForCurrentBlog(userId: string, blogId: string, mergedQueryParams: RequestBannedUsersQueryModel){
     const aggregationPipeline: PipelineStage[] = [
-      { $match: { _id: new Types.ObjectId(blogId)} }, // Фильтруем только нужный блог
+      { $match: { _id: new Types.ObjectId(blogId) } }, // Фильтруем только нужный блог
+      { $project: { _id: 0, bannedUsers: 1 } }, // Проецируем только поле bannedUsers
       { $unwind: "$bannedUsers" }, // Развертываем массив bannedUsers
       { $match: { "bannedUsers.login": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } }, // Фильтруем по searchLoginTerm
       { $sort: { [mergedQueryParams.sortBy]: this.sortByDesc(mergedQueryParams.sortDirection) } }, // Сортируем результаты
       { $skip: this.skipPage(mergedQueryParams.pageNumber, mergedQueryParams.pageSize) }, // Пропускаем результаты
       { $limit: +mergedQueryParams.pageSize }, // Ограничиваем количество результатов
-      { $group: { _id: "$_id", bannedUsers: { $push: "$bannedUsers" } } }, // Группируем результаты по блогу
+      {
+        $group: {
+          _id: null,
+          bannedUsers: { $push: "$bannedUsers" }
+        }
+      }, // Группируем результаты
     ];
-    
+  
     const [result] = await this.blogModel.aggregate(aggregationPipeline);
     const users = result ? result.bannedUsers : [];
 
