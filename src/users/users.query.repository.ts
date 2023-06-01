@@ -74,7 +74,7 @@ const users = await this.userModel.find(query)
     const aggregationPipeline: PipelineStage[] = [
       { $match: { _id: new Types.ObjectId(blogId)} }, // Фильтруем только нужный блог
       { $unwind: "$bannedUsers" }, // Развертываем массив bannedUsers
-      { $match: { "bannedUsers.bannedLogin": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } }, // Фильтруем по searchLoginTerm
+      { $match: { "bannedUsers.login": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } }, // Фильтруем по searchLoginTerm
       { $sort: { [mergedQueryParams.sortBy]: this.sortByDesc(mergedQueryParams.sortDirection) } }, // Сортируем результаты
       { $skip: this.skipPage(mergedQueryParams.pageNumber, mergedQueryParams.pageSize) }, // Пропускаем результаты
       { $limit: +mergedQueryParams.pageSize }, // Ограничиваем количество результатов
@@ -95,8 +95,8 @@ const users = await this.userModel.find(query)
   
     const outUsers = users.map((user) => {
       return {
-        id: user.bannedUserId,
-        login: user.bannedLogin,
+        id: user.id,
+        login: user.login,
         banInfo: {
           isBanned: user.isBanned,
           banDate: user.banDate,

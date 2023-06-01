@@ -40,12 +40,12 @@ export class BanUserForSpecificBlogUseCase implements ICommandHandler<BanUserFor
     }
 
     if(banStatus === true){
-      if(blog.bannedUsers.some(user => user.bannedUserId === bannedUserId)){
+      if(blog.bannedUsers.some(user => user.id === bannedUserId)){
         return BlogActionResult.UserAlreadyBanned
       }
       const banUserInfo: BannedBlogUsersType = {
-        bannedUserId: bannedUserId,
-        bannedLogin: user.login,
+        id: bannedUserId,
+        login: user.login,
         isBanned: true,
         banDate: new Date().toISOString(),
         banReason: banReason,
@@ -61,7 +61,7 @@ export class BanUserForSpecificBlogUseCase implements ICommandHandler<BanUserFor
     }
 
     if(banStatus === false){
-      const banedIndex = blog.bannedUsers.findIndex(user => user.bannedUserId === bannedUserId)
+      const banedIndex = blog.bannedUsers.findIndex(user => user.id === bannedUserId)
       if (banedIndex === -1) {
         return BlogActionResult.UserNotBanned
       }
