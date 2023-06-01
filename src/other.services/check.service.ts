@@ -89,4 +89,13 @@ export class CheckService {
     );
     return !!userDevice;
   }
+
+  async isUserOwnerOfBlog(userId, blogId): Promise<boolean>{
+    const blog = await this.blogsRepository.getBlogDBTypeById(blogId)
+    if (!blog || blog.userId !== userId) {
+      return false 
+    } else {
+      return true
+    }
+  }
 }

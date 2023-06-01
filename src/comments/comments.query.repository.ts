@@ -96,21 +96,28 @@ export class CommentsQueryRepository {
     const commentsForOutput = comments.map((comment: CommentDocument) => {
         const currentPostIndex = posts.findIndex(post => post._id.toString() === comment.postId)
         const currentPost = posts[currentPostIndex]
+        const LikesAndDislikes = comment.countLikesAndDislikes()
  
       return {
         id: comment._id.toString(),
         content: comment.content,
+        createdAt: comment.createdAt,
         commentatorInfo: {
           userId: comment.userId,
           userLogin: comment.userLogin,
         },
-        createdAt: comment.createdAt,
+        likesInfo: {
+          likesCount : LikesAndDislikes.likesCount,
+          dislikesCount : LikesAndDislikes.dislikesCount,
+          myStatus :"None"},
+        
         postInfo: {
           id: comment.postId,
           title: currentPost.title,
           blogId: currentPost.blogId,
           blogName: currentPost.blogName
         }
+
       };
     })
     const pageCount = Math.ceil(commentsCount / +pageSize);

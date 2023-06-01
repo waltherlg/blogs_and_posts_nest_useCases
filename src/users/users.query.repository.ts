@@ -83,7 +83,15 @@ const users = await this.userModel.find(query)
     
     const [result] = await this.blogModel.aggregate(aggregationPipeline);
     const users = result ? result.bannedUsers : [];
-    const usersCount = users.length;
+
+    const usersCountPipeline: PipelineStage[] = [
+      { $match: { _id: new Types.ObjectId(blogId) } },
+      { $unwind: "$bannedUsers" },
+      { $match: { "bannedUsers.bannedLogin": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } },
+      { $group: { _id: null, count: { $sum: 1 } } },
+    ];
+    const [countResult] = await this.blogModel.aggregate(usersCountPipeline);
+    const usersCount = countResult ? countResult.count : 0;
   
     const outUsers = users.map((user) => {
       return {

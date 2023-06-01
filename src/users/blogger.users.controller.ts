@@ -9,7 +9,7 @@ import { BlogsRepository } from "src/blogs/infrostracture/blogs.repository"
 import { RequestBannedUsersQueryModel, DEFAULT_BANNED_USERS_QUERY_PARAMS } from "src/models/types"
 import { UsersQueryRepository } from "./users.query.repository"
 import { CheckService } from "src/other.services/check.service"
-import { CustomNotFoundException } from "src/exceptions/custom.exceptions"
+import { CustomNotFoundException, CustomisableException } from "src/exceptions/custom.exceptions"
 
 
 @UseGuards(JwtAuthGuard)
@@ -33,6 +33,9 @@ export class BloggerUsersController {
   async getBannedUsersForCurrentBlog(@Req() request, @Param('blogId') blogId: string, @Query() queryParams: RequestBannedUsersQueryModel){
     if(!await this.checkService.isBlogExist(blogId)){
       throw new CustomNotFoundException('blog')
+    }
+    if(!await this.checkService.isUserOwnerOfBlog(request.user.userId, blogId)){
+      throw new CustomisableException('blogId', 'you are not owner of this blog', 403)
     }
     const mergedQueryParams = { ...DEFAULT_BANNED_USERS_QUERY_PARAMS, ...queryParams }
     return await this.usersQueryRepository.getBannedUsersForCurrentBlog(request.user.userId, blogId, mergedQueryParams)
