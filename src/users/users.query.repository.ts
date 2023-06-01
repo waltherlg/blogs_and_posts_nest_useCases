@@ -87,7 +87,7 @@ const users = await this.userModel.find(query)
     const usersCountPipeline: PipelineStage[] = [
       { $match: { _id: new Types.ObjectId(blogId) } },
       { $unwind: "$bannedUsers" },
-      { $match: { "bannedUsers.bannedLogin": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } },
+      { $match: { "bannedUsers.login": { $regex: mergedQueryParams.searchLoginTerm || "", $options: "i" } } },
       { $group: { _id: null, count: { $sum: 1 } } },
     ];
     const [countResult] = await this.blogModel.aggregate(usersCountPipeline);
